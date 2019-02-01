@@ -37,11 +37,7 @@ var _ = Describe("The ECS converter", func() {
 		It("Returns the expected JSON blob", func() {
 			converted, err := converter.Transform("A=B")
 			Expect(err).To(BeNil())
-			Expect(converted).To(Equal(`[{"name": "A", "value": "B"}]`))
-
-			converted, err = converter.Transform("C=D")
-			Expect(err).To(BeNil())
-			Expect(converted).To(Equal(`[{"name": "C", "value": "D"}]`))
+			Expect(converted).To(Equal(`[{"name":"A","value":"B"}]`))
 		})
 	})
 })

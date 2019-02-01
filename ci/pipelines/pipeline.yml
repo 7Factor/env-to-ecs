@@ -11,7 +11,9 @@ resources:
   - name: envtoecs-image
     type: docker-image
     source:
-      repository: 7factor/dotenv-to-ecs
+      repository: 7factor/env-to-ecs
+      username: ((dockerhub.username))
+      password: ((dockerhub.password))
 
 jobs:
 
@@ -41,7 +43,7 @@ jobs:
         params:
           tag_as_latest: false
           build: envtoecs-src
-          dockerfile: envtoecs-src/env/Dockerfile
+          dockerfile: envtoecs-src/Dockerfile
           additional_tags: envtoecs-src/.git/short_ref
         get_params:
           skip_download: true
