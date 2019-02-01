@@ -23,7 +23,13 @@ var _ = Describe("The file reader/converter", func() {
 	})
 })
 
+// Constants for testing.
 const EmptyEnvironmentArray = `[]`
+const MultiLineInput = `
+A=B
+D=E
+`
+
 var _ = Describe("The ECS converter", func() {
 	Context("When passed a blank file", func() {
 		It("Returns an empty JSON blob", func() {
@@ -38,6 +44,14 @@ var _ = Describe("The ECS converter", func() {
 			converted, err := converter.Transform("A=B")
 			Expect(err).To(BeNil())
 			Expect(converted).To(Equal(`[{"name":"A","value":"B"}]`))
+		})
+	})
+
+	Context("when passed a multi line file with newlines in between", func() {
+		It("Returns the expected JSON blob", func() {
+			converted, err := converter.Transform(MultiLineInput)
+			Expect(err).To(BeNil())
+			Expect(converted).To(Equal(`[{"name":"A","value":"B"},{"name":"D","value":"E"}]`))
 		})
 	})
 })
