@@ -4,10 +4,6 @@ resources:
   - name: dotenvtoecs-src
     type: git
     source:
-      paths:
-        - src/**
-        - ci/scripts/**
-        - ci/tasks/**
       branch: master
       uri: ((git-repositories.dotenvtoecs-uri))
       private_key: ((git-repositories.dotenvtoecs-key))
