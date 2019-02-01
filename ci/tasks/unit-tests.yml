@@ -17,4 +17,4 @@ run:
     - |
       ./ci/scripts/ensure_deps.sh
       ./ci/scripts/unit_tests.sh
-  dir: golang-starter-src
+  dir: envtoecs-src
