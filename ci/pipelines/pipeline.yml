@@ -1,14 +1,14 @@
 ---
 # We care when the source, ci/scripts, and ci/tasks code changes.
 resources:
-  - name: dotenvtoecs-src
+  - name: envtoecs-src
     type: git
     source:
       branch: master
-      uri: ((git-repositories.dotenvtoecs-uri))
-      private_key: ((git-repositories.dotenvtoecs-key))
+      uri: ((git-repositories.envtoecs-uri))
+      private_key: ((git-repositories.envtoecs-key))
 
-  - name: dotenvtoecs-image
+  - name: envtoecs-image
     type: docker-image
     source:
       repository: 7factor/dotenv-to-ecs
@@ -22,10 +22,10 @@ jobs:
   - name: unit-tests
     serial_groups: [staging]
     plan:
-      - get: dotenvtoecs-src
+      - get: envtoecs-src
         trigger: true
       - task: unit-tests
-        file: dotenvtoecs-src/ci/tasks/unit-tests.yml
+        file: envtoecs-src/ci/tasks/unit-tests.yml
 
   #####################
   ##     BUILD       ##
@@ -34,14 +34,14 @@ jobs:
   - name: build-rc
     serial_groups: [staging]
     plan:
-      - get: dotenvtoecs-src
+      - get: envtoecs-src
         trigger: true
         passed: [unit-tests]
-      - put: dotenvtoecs-image
+      - put: envtoecs-image
         params:
           tag_as_latest: false
-          build: dotenvtoecs-src
-          dockerfile: dotenvtoecs-src/env/Dockerfile
-          additional_tags: dotenvtoecs-src/.git/short_ref
+          build: envtoecs-src
+          dockerfile: envtoecs-src/env/Dockerfile
+          additional_tags: envtoecs-src/.git/short_ref
         get_params:
           skip_download: true

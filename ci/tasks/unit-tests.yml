@@ -8,7 +8,7 @@ image_resource:
     tag: 0.13
 
 inputs:
-  - name: dotenvtoecs-src
+  - name: envtoecs-src
 
 run:
   path: sh
