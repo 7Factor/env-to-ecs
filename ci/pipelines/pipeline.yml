@@ -1,13 +1,7 @@
 ---
-resource_types:
-  - name: terraform
-    type: docker-image
-    source:
-      repository: 7factor/terraform-resource
-
 # We care when the source, ci/scripts, and ci/tasks code changes.
 resources:
-  - name: golang-starter-src
+  - name: dotenvtoecs-src
     type: git
     source:
       paths:
@@ -15,34 +9,13 @@ resources:
         - ci/scripts/**
         - ci/tasks/**
       branch: master
-      uri: ((git-repositories.golang-starter-uri))
-      private_key: ((git-repositories.golang-starter-key))
+      uri: ((git-repositories.dotenvtoecs-uri))
+      private_key: ((git-repositories.dotenvtoecs-key))
 
-  # We will use this trigger on changes to the terraform directory for
-  # re-deployment of a current artifact. This gets the same source as the
-  # src item above, it just triggers on something different.
-  - name: golang-starter-terraform
-    type: git
-    source:
-      paths:
-        - ci/terraform/**
-      branch: master
-      uri: ((git-repositories.golang-starter-uri))
-      private_key: ((git-repositories.golang-starter-key))
-
-  - name: golang-starter-image
+  - name: dotenvtoecs-image
     type: docker-image
     source:
-      repository: ((aws.ecr-repo-account-id)).dkr.ecr.((aws-region)).amazonaws.com/golang-starter
-
-  - name: terraformer
-    type: terraform
-    source:
-      storage:
-        bucket: ((aws.terraform-bucket))
-        bucket_path: ((aws-region))
-      env:
-        AWS_DEFAULT_REGION: ((aws-region))
+      repository: 7factor/dotenv-to-ecs
 
 jobs:
 
@@ -53,10 +26,10 @@ jobs:
   - name: unit-tests
     serial_groups: [staging]
     plan:
-      - get: golang-starter-src
+      - get: dotenvtoecs-src
         trigger: true
       - task: unit-tests
-        file: golang-starter-src/ci/tasks/unit-tests.yml
+        file: dotenvtoecs-src/ci/tasks/unit-tests.yml
 
   #####################
   ##     BUILD       ##
@@ -65,100 +38,14 @@ jobs:
   - name: build-rc
     serial_groups: [staging]
     plan:
-      - get: golang-starter-src
+      - get: dotenvtoecs-src
         trigger: true
         passed: [unit-tests]
-      - put: golang-starter-image
+      - put: dotenvtoecs-image
         params:
           tag_as_latest: false
-          build: golang-starter-src
-          dockerfile: golang-starter-src/env/Dockerfile
-          additional_tags: golang-starter-src/.git/short_ref
+          build: dotenvtoecs-src
+          dockerfile: dotenvtoecs-src/env/Dockerfile
+          additional_tags: dotenvtoecs-src/.git/short_ref
         get_params:
           skip_download: true
-
-  ##########################
-  ## TERRAFORM DEPLOYMENT ##
-  ##########################
-
-  # We want to deploy only if there's new terraform or an
-  # updated image--hence the git path magic.
-  - name: deploy-stage
-    serial_groups: [staging]
-    plan:
-      - aggregate:
-          - get: golang-starter-src
-          - get: golang-starter-terraform
-            trigger: true
-          - get: golang-starter-image
-            passed: [build-rc]
-            trigger: true
-            params:
-              skip_download: true
-      - put: terraformer
-        params:
-          terraform_source: golang-starter-terraform/ci/terraform/ecs/stage
-          env_name: golang-starter-ecs-stage
-          vars:
-            ecr_tag: golang-starter-src/.git/short_ref
-            ecr_uri: ((aws.ecr-repo-account-id)).dkr.ecr.((aws-region)).amazonaws.com/golang-starter
-            deploy_to_account: ((aws.dev-account-id))
-
-  # A production deploy has everything, so no need to filter based
-  # on terraform or whatever. It's 100% manual.
-  - name: deploy-prod
-    serial_groups: [prod]
-    plan:
-      - aggregate:
-          - get: golang-starter-src
-            passed: [deploy-stage]
-          - get: golang-starter-terraform
-            passed: [deploy-stage]
-          - get: golang-starter-image
-            passed: [deploy-stage]
-            params:
-              skip_download: true
-      - put: terraformer
-        params:
-          terraform_source: golang-starter-terraform/ci/terraform/ecs/prod
-          env_name: golang-starter-ecs-prod
-          vars:
-            ecr_tag: golang-starter-src/.git/short_ref
-            ecr_uri: ((aws.ecr-repo-account-id)).dkr.ecr.((aws-region)).amazonaws.com/golang-starter
-            deploy_to_account: ((aws.prod-account-id))
-
-  #########################
-  ## DESTROY DEPLOYMENTS ##
-  #########################
-
-  - name: destroy-stage
-    serial_groups: [staging]
-    plan:
-      - get: golang-starter-terraform
-      - put: terraformer
-        params:
-          terraform_source: golang-starter-terraform/ci/terraform/ecs/stage
-          env_name: golang-starter-ecs-stage
-          vars:
-            deploy_to_account: ((aws.dev-account-id))
-            ecr_tag:
-            ecr_uri:
-          action: destroy
-        get_params:
-          action: destroy
-
-  - name: destroy-prod
-    serial_groups: [prod]
-    plan:
-      - get: golang-starter-terraform
-      - put: terraformer
-        params:
-          terraform_source: golang-starter-terraform/ci/terraform/ecs/prod
-          env_name: golang-starter-ecs-prod
-          vars:
-            deploy_to_account: ((aws.prod-account-id))
-            ecr_tag:
-            ecr_uri:
-          action: destroy
-        get_params:
-          action: destroy

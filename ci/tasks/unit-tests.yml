@@ -8,7 +8,7 @@ image_resource:
     tag: 0.13
 
 inputs:
-  - name: golang-starter-src
+  - name: dotenvtoecs-src
 
 run:
   path: sh
