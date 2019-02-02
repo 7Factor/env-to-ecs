@@ -12,22 +12,44 @@ type Pair struct {
 	Value string `json:"value"`
 }
 
-func Transform(contents string) (string, error) {
+func TransformAndTranslate(contents string) (string, error) {
 	if contents == "" {
 		return `[]`, errors.New("contents cannot be empty")
 	}
 
-	var pairs []Pair
-	split := strings.Split(contents,"=")
-	pairs = append(pairs, Pair{
-		Name: split[0],
-		Value: split[1],
-	})
+	cleanedSlice := removeEmptyStrings(strings.Split(contents,"\n"))
 
-	return Translate(pairs)
+	pairs := transform(cleanedSlice)
+
+	return translate(pairs)
 }
 
-func Translate(pairs []Pair) (string, error) {
+func removeEmptyStrings(slice []string) []string {
+	var cleanedSlice []string
+	for _, str := range slice {
+		if str != "" {
+			cleanedSlice = append(cleanedSlice, str)
+		}
+	}
+	return cleanedSlice
+}
+
+func transform(slice []string) []Pair {
+	var splitOnEquals []string
+	var pairs []Pair
+
+	for _, item := range slice {
+		splitOnEquals = strings.Split(item,"=")
+		pairs = append(pairs, Pair{
+			Name:  splitOnEquals[0],
+			Value: splitOnEquals[1],
+		})
+	}
+
+	return pairs
+}
+
+func translate(pairs []Pair) (string, error) {
 	buffer := bytes.Buffer{}
 	err := json.NewEncoder(&buffer).Encode(pairs)
 

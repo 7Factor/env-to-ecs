@@ -33,7 +33,7 @@ D=E
 var _ = Describe("The ECS converter", func() {
 	Context("When passed a blank file", func() {
 		It("Returns an empty JSON blob", func() {
-			converted, err := converter.Transform("")
+			converted, err := converter.TransformAndTranslate("")
 			Expect(err).ToNot(BeNil())
 			Expect(converted).To(Equal(EmptyEnvironmentArray))
 		})
@@ -41,15 +41,15 @@ var _ = Describe("The ECS converter", func() {
 
 	Context("When passed a single line file without comments", func() {
 		It("Returns the expected JSON blob", func() {
-			converted, err := converter.Transform("A=B")
+			converted, err := converter.TransformAndTranslate("A=B")
 			Expect(err).To(BeNil())
 			Expect(converted).To(Equal(`[{"name":"A","value":"B"}]`))
 		})
 	})
 
-	Context("when passed a multi line file with newlines in between", func() {
+	Context("When passed a multi line file with newlines in between", func() {
 		It("Returns the expected JSON blob", func() {
-			converted, err := converter.Transform(MultiLineInput)
+			converted, err := converter.TransformAndTranslate(MultiLineInput)
 			Expect(err).To(BeNil())
 			Expect(converted).To(Equal(`[{"name":"A","value":"B"},{"name":"D","value":"E"}]`))
 		})
