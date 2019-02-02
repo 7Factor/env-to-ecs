@@ -25,10 +25,12 @@ var _ = Describe("The file reader/converter", func() {
 
 // Constants for testing.
 const EmptyEnvironmentArray = `[]`
+const SingleLineSingleInput = `A=B`
 const MultiLineInput = `
 A=B
 D=E
 `
+const SingleLineMultiInput = `W=X Y=Z`
 
 var _ = Describe("The ECS converter", func() {
 	Context("When passed a blank file", func() {
@@ -41,7 +43,7 @@ var _ = Describe("The ECS converter", func() {
 
 	Context("When passed a single line file without comments", func() {
 		It("Returns the expected JSON blob", func() {
-			converted, err := converter.TransformAndTranslate("A=B")
+			converted, err := converter.TransformAndTranslate(SingleLineSingleInput)
 			Expect(err).To(BeNil())
 			Expect(converted).To(Equal(`[{"name":"A","value":"B"}]`))
 		})
@@ -52,6 +54,14 @@ var _ = Describe("The ECS converter", func() {
 			converted, err := converter.TransformAndTranslate(MultiLineInput)
 			Expect(err).To(BeNil())
 			Expect(converted).To(Equal(`[{"name":"A","value":"B"},{"name":"D","value":"E"}]`))
+		})
+	})
+
+	Context("When passed a single line file with multiple items", func() {
+		It("Returns the expected JSON blob", func() {
+			converted, err := converter.TransformAndTranslate(SingleLineMultiInput)
+			Expect(err).To(BeNil())
+			Expect(converted).To(Equal(`[{"name":"W","value":"X"},{"name":"Y","value":"Z"}]`))
 		})
 	})
 })
