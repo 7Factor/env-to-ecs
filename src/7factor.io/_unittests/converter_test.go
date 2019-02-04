@@ -37,6 +37,7 @@ L=M
 N=O
 `
 const SingleLineMultiInput = `W=X Y=Z`
+const illegalJSONInput = `A=\"`
 
 var _ = Describe("The ECS converter", func() {
 	Context("When passed a blank file", func() {
@@ -76,6 +77,14 @@ var _ = Describe("The ECS converter", func() {
 			converted, err := converter.TransformAndTranslate(SingleLineMultiInput)
 			Expect(err).To(BeNil())
 			Expect(converted).To(Equal(`[{"name":"W","value":"X"},{"name":"Y","value":"Z"}]`))
+		})
+	})
+
+	Context("When passed characters that cause the JSON translation to fail", func() {
+		It("Returns the expected JSON blob", func() {
+			converted, err := converter.TransformAndTranslate(illegalJSONInput)
+			Expect(err).To(BeNil())
+			Expect(converted).To(Equal(`[{"name":"A","value":"\\\""}]`))
 		})
 	})
 })
