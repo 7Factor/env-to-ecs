@@ -16,6 +16,6 @@ func ReadAndConvert(path string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("unable to read file, catestrophic error")
 	} else {
-		return string(contents), nil
+		return TransformAndTranslate(string(contents))
 	}
 }
