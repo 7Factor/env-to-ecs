@@ -21,6 +21,11 @@ N=O
 `
 const SingleLineMultiInput = `W=X Y=Z`
 const illegalJSONInput = `A=\"`
+const MultiLineWithComments = `
+# this is a comment
+Q=R
+S=T
+`
 
 var _ = Describe("The ECS converter", func() {
 	Context("When passed a blank file", func() {
@@ -68,6 +73,14 @@ var _ = Describe("The ECS converter", func() {
 			converted, err := converter.TransformAndTranslate(illegalJSONInput)
 			Expect(err).To(BeNil())
 			Expect(converted).To(Equal(`[{"name":"A","value":"\\\""}]`))
+		})
+	})
+
+	Context("When passed a multi-line file with comments", func() {
+		It("Returns the expected JSON blob", func() {
+			converted, err := converter.TransformAndTranslate(MultiLineWithComments)
+			Expect(err).To(BeNil())
+			Expect(converted).To(Equal(`[{"name":"Q","value":"R"},{"name":"S","value":"T"}]`))
 		})
 	})
 })
