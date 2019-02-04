@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"regexp"
 	"strings"
 )
 
@@ -50,26 +51,34 @@ func translate(pairs []Pair) (string, error) {
 	}
 }
 
-func cleanContents(string string) []string {
-	noWhiteSpace := removeWhiteSpace(string)
+func cleanContents(dirtyString string) []string {
+	withoutComments := removeComments(dirtyString)
+	noWhiteSpace := removeWhiteSpace(withoutComments)
 	cleanedSlice := removeEmptyStrings(noWhiteSpace)
 
 	return cleanedSlice
 }
 
-func removeWhiteSpace(string string) []string {
-	noWhiteSpace := strings.Fields(string)
+func removeComments(stringWithComments string) string {
+	re := regexp.MustCompile("(?m)[\r\n]+^.*#.*$")
+	withoutComments := re.ReplaceAllString(stringWithComments, "")
+
+	return withoutComments
+}
+
+func removeWhiteSpace(stringWithWhiteSpace string) []string {
+	noWhiteSpace := strings.Fields(stringWithWhiteSpace)
 
 	return noWhiteSpace
 }
 
-func removeEmptyStrings(slice []string) []string {
-	var cleanedSlice []string
-	for _, str := range slice {
+func removeEmptyStrings(sliceWithEmptyStrings []string) []string {
+	var noEmptyStrings []string
+	for _, str := range sliceWithEmptyStrings {
 		if str != "" {
-			cleanedSlice = append(cleanedSlice, str)
+			noEmptyStrings = append(noEmptyStrings, str)
 		}
 	}
 
-	return cleanedSlice
+	return noEmptyStrings
 }
