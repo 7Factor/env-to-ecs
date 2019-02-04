@@ -30,6 +30,12 @@ const MultiLineInput = `
 A=B
 D=E
 `
+const MultiLineWithSpacesInput = `
+
+L=M
+
+N=O
+`
 const SingleLineMultiInput = `W=X Y=Z`
 
 var _ = Describe("The ECS converter", func() {
@@ -49,11 +55,19 @@ var _ = Describe("The ECS converter", func() {
 		})
 	})
 
-	Context("When passed a multi line file with newlines in between", func() {
+	Context("When passed a multi-line file with newlines in between", func() {
 		It("Returns the expected JSON blob", func() {
 			converted, err := converter.TransformAndTranslate(MultiLineInput)
 			Expect(err).To(BeNil())
 			Expect(converted).To(Equal(`[{"name":"A","value":"B"},{"name":"D","value":"E"}]`))
+		})
+	})
+
+	Context("When passed a multi-line file with spaces in between", func() {
+		It("Returns the expected JSON blob", func() {
+			converted, err := converter.TransformAndTranslate(MultiLineWithSpacesInput)
+			Expect(err).To(BeNil())
+			Expect(converted).To(Equal(`[{"name":"L","value":"M"},{"name":"N","value":"O"}]`))
 		})
 	})
 
