@@ -17,21 +17,11 @@ func TransformAndTranslate(contents string) (string, error) {
 		return `[]`, errors.New("contents cannot be empty")
 	}
 
-	cleanedSlice := removeEmptyStrings(strings.Split(contents,"\n"))
+	cleanedContents := cleanContents(contents)
 
-	pairs := transform(cleanedSlice)
+	pairs := transform(cleanedContents)
 
 	return translate(pairs)
-}
-
-func removeEmptyStrings(slice []string) []string {
-	var cleanedSlice []string
-	for _, str := range slice {
-		if str != "" {
-			cleanedSlice = append(cleanedSlice, str)
-		}
-	}
-	return cleanedSlice
 }
 
 func transform(slice []string) []Pair {
@@ -58,4 +48,28 @@ func translate(pairs []Pair) (string, error) {
 	} else {
 		return strings.TrimSpace(buffer.String()), nil
 	}
+}
+
+func cleanContents(string string) []string {
+	noWhiteSpace := removeWhiteSpace(string)
+	cleanedSlice := removeEmptyStrings(noWhiteSpace)
+
+	return cleanedSlice
+}
+
+func removeWhiteSpace(string string) []string {
+	noWhiteSpace := strings.Fields(string)
+
+	return noWhiteSpace
+}
+
+func removeEmptyStrings(slice []string) []string {
+	var cleanedSlice []string
+	for _, str := range slice {
+		if str != "" {
+			cleanedSlice = append(cleanedSlice, str)
+		}
+	}
+
+	return cleanedSlice
 }
