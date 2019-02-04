@@ -15,9 +15,9 @@ func GetArguments() (Config, error) {
 	getopt.Parse()
 	args := getopt.Args()
 
-	if len(args) <= 1 {
+	if len(args) <= 0 {
 		return Config{}, errors.New("did not find file to parse")
 	}
 
-	return Config{}, nil
+	return Config{EnvironmentFile:args[0]}, nil
 }
