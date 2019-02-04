@@ -21,4 +21,12 @@ var _ = Describe("The file reader/converter", func() {
 			Expect(contents).ToNot(BeEmpty())
 		})
 	})
+
+	Context("When attempting the ECS converter", func() {
+		It("Returns converted contents in the expected manner", func() {
+			contents, err := converter.ReadAndConvert("valid_path.env")
+			Expect(err).To(BeNil())
+			Expect(contents).To(Equal(`[{"name":"FOO","value":"bar"},{"name":"BAZ","value":"boo"}]`))
+		})
+	})
 })
