@@ -9,12 +9,12 @@ import (
 func ReadAndConvert(path string) (string, error) {
 	_, err := os.Stat(path)
 	if err != nil {
-		return "", fmt.Errorf( "File not found.")
+		return "", fmt.Errorf( "file not found")
 	}
 
 	contents, err := ioutil.ReadFile(path)
 	if err != nil {
-		return "", fmt.Errorf("Unable to read file. Catestrophic error!")
+		return "", fmt.Errorf("unable to read file, catestrophic error")
 	} else {
 		return string(contents), nil
 	}
