@@ -10,32 +10,44 @@ import (
 // Default return should at a minimum have the
 // InFile value populated with something.
 type Config struct {
-	EnvironmentFile string
-	OutputFile string
+	InFile  string
+	OutFile string
 }
 
-const docString =
-`
-Usage: env_to_ecs [FILE] [--flags]
+// docopt expects this to be in a very specify format, edit with caution
+const docString = `
+Usage: env_to_ecs  [INFILE] [-o]
 
-Process FILE and convert to a new file type.
+Process INFILE and converts it to a new file type.
 
 Arguments:
-  FILE        optional input file
+  INFILE        Required input file.
+  OUTFILE       Optional output file.
+
+Options:
+  -o --output       verbose mode
 `
 
 func GetArguments() (Config, error) {
 	args, err := docopt.Parse(docString, os.Args, true, "", false)
 	if err != nil {
-		fmt.Fprintln(os.Stderr)
+		fmt.Fprintln(os.Stderr, err)
 		return Config{}, errors.New("error parsing args")
 	}
 
-	if args["FILE"] == nil {
+	if args["INFILE"] == nil {
 		return Config{}, errors.New("did not find file to parse")
 	}
 
-	envFile := args["FILE"].(string)
+	if hasOutputFlag(args) {
+		return Config{}, errors.New("must specify outfile")
+	}
 
-	return Config{EnvironmentFile:envFile}, nil
+	envFile := args["INFILE"].(string)
+
+	return Config{InFile: envFile}, nil
+}
+
+func hasOutputFlag(args map[string]interface{}) bool {
+	return args["-o"] != nil || args["--output"] != false
 }
