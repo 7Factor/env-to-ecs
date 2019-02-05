@@ -55,20 +55,17 @@ func cleanContents(dirtyString string) []string {
 	withoutComments := removeComments(dirtyString)
 	noWhiteSpace := removeWhiteSpace(withoutComments)
 	cleanedSlice := removeEmptyStrings(noWhiteSpace)
-
 	return cleanedSlice
 }
 
 func removeComments(stringWithComments string) string {
-	re := regexp.MustCompile("(?m)[\r\n]+^.*#.*$")
+	re := regexp.MustCompile("(?m)^\\s*\\#.*$")
 	withoutComments := re.ReplaceAllString(stringWithComments, "")
-
 	return withoutComments
 }
 
 func removeWhiteSpace(stringWithWhiteSpace string) []string {
 	noWhiteSpace := strings.Fields(stringWithWhiteSpace)
-
 	return noWhiteSpace
 }
 
@@ -79,6 +76,5 @@ func removeEmptyStrings(sliceWithEmptyStrings []string) []string {
 			noEmptyStrings = append(noEmptyStrings, str)
 		}
 	}
-
 	return noEmptyStrings
 }
