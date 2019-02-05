@@ -11,9 +11,8 @@ import:
   - html/charset
 - package: gopkg.in/yaml.v2
   version: ^2.2.1
-- package: github.com/pborman/getopt
-  subpackages:
-  - v2
+- package: github.com/docopt/docopt-go
+  version: ^0.6.2
 - package: golang.org/x/text
   version: ^0.3.0
   subpackages:
