@@ -6,16 +6,25 @@ import (
 	"os"
 )
 
-func ReadAndConvert(path string) (string, error) {
-	_, err := os.Stat(path)
+func ReadAndConvert(inFile string, outFile string) (string, error) {
+	// verify inFile exists
+	_, err := os.Stat(inFile)
 	if err != nil {
 		return "", fmt.Errorf("file not found")
 	}
 
-	contents, err := ioutil.ReadFile(path)
+	// parse inFile
+	contents, err := ioutil.ReadFile(inFile)
 	if err != nil {
 		return "", fmt.Errorf("unable to read file, catestrophic error")
-	} else {
-		return TransformAndTranslate(string(contents))
 	}
+
+	// create outFile if it does not exist
+	_, err = os.Stat(outFile)
+	if os.IsNotExist(err) {
+		os.Create(outFile)
+	}
+
+	return TransformAndTranslate(string(contents))
+
 }
