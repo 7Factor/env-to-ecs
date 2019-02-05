@@ -36,5 +36,7 @@ func GetArguments() (Config, error) {
 		return Config{}, errors.New("did not find file to parse")
 	}
 
-	return Config{}, nil
+	envFile := args["FILE"].(string)
+
+	return Config{EnvironmentFile:envFile}, nil
 }
