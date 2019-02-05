@@ -18,8 +18,7 @@ const docString =
 `
 Usage: env_to_ecs [FILE] [--flags]
 
-Process FILE and optionally apply correction to either left-hand side or
-right-hand side.
+Process FILE and convert to a new file type.
 
 Arguments:
   FILE        optional input file
