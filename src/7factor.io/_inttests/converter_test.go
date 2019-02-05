@@ -14,19 +14,17 @@ var _ = Describe("The file reader/converter", func() {
 		})
 	})
 
-	Context("When passed a valid file path", func() {
-		It("Returns the contents of the path and no error", func() {
-			contents, err := converter.ReadAndConvert("valid_path.env", "")
+	Context("When passed an valid file path", func() {
+		It("Creates the outfile if it does not exist", func() {
+			_, err := converter.ReadAndConvert("valid_path.env", "output.json")
 			Expect(err).To(BeNil())
-			Expect(contents).ToNot(BeEmpty())
+			Expect("output.json").Should(BeAnExistingFile())
 		})
-	})
 
-	Context("When attempting the ECS converter", func() {
-		It("Returns converted contents in the expected manner", func() {
-			contents, err := converter.ReadAndConvert("valid_path.env", "")
+		It("Correctly writes transformed contents to outfile", func() {
+			transformedContents, err := converter.ReadAndConvert("valid_path.env", "output.json")
 			Expect(err).To(BeNil())
-			Expect(contents).To(Equal(`[{"name":"FOO","value":"bar"},{"name":"BAZ","value":"boo"}]`))
+			Expect("output.json").To(ContainSubstring(transformedContents))
 		})
 	})
 })
