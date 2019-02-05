@@ -2,7 +2,6 @@ package args
 
 import (
 	"errors"
-	"fmt"
 	"github.com/docopt/docopt-go"
 	"os"
 )
@@ -16,36 +15,49 @@ type Config struct {
 
 // docopt expects this to be in a very specify format, edit with caution
 const docString = `
-Usage: env_to_ecs  [INFILE] [-o]
+Usage: env_to_ecs  [INFILE] [-o] [OUTFILE]
 
-Process INFILE and converts it to a new file type.
+Process INFILE and convert it to a new file type.
 
 Arguments:
-  INFILE        Required input file.
-  OUTFILE       Optional output file.
+  INFILE            Required input file.
+  OUTFILE           Optional output file.
 
 Options:
-  -o --output       verbose mode
+  -o --output       Specify output file.
 `
 
 func GetArguments() (Config, error) {
+	// setup docString
 	args, err := docopt.Parse(docString, os.Args, true, "", false)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
 		return Config{}, errors.New("error parsing args")
 	}
 
-	if args["INFILE"] == nil {
-		return Config{}, errors.New("did not find file to parse")
+	inFile, err := parseArgOrError(args["INFILE"])
+	if err != nil {
+		return Config{}, errors.New("INFILE cannot be empty")
 	}
 
+	var outFile string
 	if hasOutputFlag(args) {
-		return Config{}, errors.New("must specify outfile")
+		outFile, err = parseArgOrError(args["OUTFILE"])
+		if err != nil {
+			return Config{}, errors.New("OUTFILE cannot be empty")
+		}
 	}
 
-	envFile := args["INFILE"].(string)
+	return Config{InFile: inFile, OutFile: outFile}, nil
+}
 
-	return Config{InFile: envFile}, nil
+func parseArgOrError(arg interface{}) (string, error) {
+	if arg == nil {
+		return "", errors.New("arg cannot be nil")
+	} else if arg == nil {
+		return "", errors.New("flag set but no arg set")
+	} else {
+		return arg.(string), nil
+	}
 }
 
 func hasOutputFlag(args map[string]interface{}) bool {
