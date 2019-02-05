@@ -27,7 +27,7 @@ Q=R
 S=T
 `
 
-const InputWithHash = `#WITHHASH#=#FOO#`
+const InputWithHash = `WITHHASH=#FOO#`
 
 var _ = Describe("The ECS converter", func() {
 	Context("When passed a blank file", func() {
@@ -90,7 +90,7 @@ var _ = Describe("The ECS converter", func() {
 		It("Returns the expected JSON blob", func() {
 			converted, err := converter.TransformAndTranslate(InputWithHash)
 			Expect(err).To(BeNil())
-			Expect(converted).To(Equal(`[{"name":"#WITHHASH#","value":"#FOO#"}]`))
+			Expect(converted).To(Equal(`[{"name":"WITHHASH","value":"#FOO#"}]`))
 		})
 	})
 })
