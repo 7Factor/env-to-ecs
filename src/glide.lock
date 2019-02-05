@@ -1,16 +1,14 @@
-hash: 9aeaee09d1665a5ae363e65f1f75bdeb9e89ee09ae4f814b53d8ec192196f552
-updated: 2019-02-04T14:25:07.762226-05:00
+hash: f0e17321cf952ba2e4a5d78a534e6afa4e80272f804e82e3b17077649344edba
+updated: 2019-02-04T19:05:44.964136-05:00
 imports:
+- name: github.com/docopt/docopt-go
+  version: 784ddc588536785e7299f7272f39101f7faccc3f
 - name: github.com/hpcloud/tail
   version: a30252cb686a21eb2d0b98132633053ec2f7f1e5
 - name: github.com/onsi/ginkgo
   version: 2e1be8f7d90e9d3e3e58b0ce470f2f14d075406f
 - name: github.com/onsi/gomega
   version: 65fb64232476ad9046e57c26cd0bff3d3a8dc6cd
-- name: github.com/pborman/getopt
-  version: 7402d34a12a86832e3faea504d412c319b3bf1a1
-  subpackages:
-  - v2
 - name: golang.org/x/net
   version: 5ccada7d0a7ba9aeb5d3aca8d3501b4c2a509fec
   subpackages:
