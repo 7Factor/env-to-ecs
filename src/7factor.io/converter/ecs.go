@@ -9,7 +9,7 @@ import (
 )
 
 type Pair struct {
-	Name string `json:"name"`
+	Name  string `json:"name"`
 	Value string `json:"value"`
 }
 
@@ -30,7 +30,7 @@ func transform(slice []string) []Pair {
 	var pairs []Pair
 
 	for _, item := range slice {
-		splitOnEquals = strings.Split(item,"=")
+		splitOnEquals = strings.Split(item, "=")
 		pairs = append(pairs, Pair{
 			Name:  splitOnEquals[0],
 			Value: splitOnEquals[1],

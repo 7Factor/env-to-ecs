@@ -9,7 +9,7 @@ import (
 func ReadAndConvert(path string) (string, error) {
 	_, err := os.Stat(path)
 	if err != nil {
-		return "", fmt.Errorf( "file not found")
+		return "", fmt.Errorf("file not found")
 	}
 
 	contents, err := ioutil.ReadFile(path)
