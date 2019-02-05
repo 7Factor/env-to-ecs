@@ -22,9 +22,17 @@ func ReadAndConvert(inFile string, outFile string) (string, error) {
 	// create outFile if it does not exist
 	_, err = os.Stat(outFile)
 	if os.IsNotExist(err) {
-		os.Create(outFile)
+		file, _ := os.Create(outFile)
+		defer file.Close()
 	}
 
-	return TransformAndTranslate(string(contents))
+	// write to outFile
+	transformedContents, err := TransformAndTranslate(string(contents))
+	if err != nil {
+		return "", fmt.Errorf("error while transforming contents")
+	}
+	n1 := []byte(transformedContents)
+	err = ioutil.WriteFile(outFile, n1, 0644)
 
+	return outFile, nil
 }
