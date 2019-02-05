@@ -15,7 +15,7 @@ type Config struct {
 
 // docopt expects this to be in a very specify format, edit with caution
 const docString = `
-Usage: env_to_ecs  [INFILE] [-o] [OUTFILE]
+Usage: env_to_ecs  [INFILE] [-ohv] [OUTFILE]
 
 Process INFILE and convert it to a new file type.
 
@@ -25,6 +25,7 @@ Arguments:
 
 Options:
   -o --output       Specify output file.
+  -h --help         Display help info.
 `
 
 func GetArguments() (Config, error) {
