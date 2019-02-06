@@ -22,23 +22,31 @@ jobs:
   #####################
 
   - name: unit-tests
-    serial_groups: [staging]
+    serial_groups: [unit-tests]
     plan:
       - get: envtoecs-src
         trigger: true
       - task: unit-tests
         file: envtoecs-src/ci/tasks/unit-tests.yml
 
+  - name: int-tests
+    serial_groups: [int-tests]
+    plan:
+      - get: envtoecs-src
+        trigger: true
+      - task: int-tests
+        file: envtoecs-src/ci/tasks/int-tests.yml
+
   #####################
   ##     BUILD       ##
   #####################
 
   - name: build-rc
-    serial_groups: [staging]
+    serial_groups: [unit-tests, int-tests]
     plan:
       - get: envtoecs-src
         trigger: true
-        passed: [unit-tests]
+        passed: [unit-tests, int-tests]
       - put: envtoecs-image
         params:
           tag_as_latest: false
