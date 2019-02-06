@@ -44,8 +44,10 @@ func GetArguments() (Config, error) {
 	if hasOutputFlag(args) {
 		outFile, err = parseArgOrError(args["OUTFILE"])
 		if err != nil {
-			return Config{}, errors.New("OUTFILE cannot be empty")
+			return Config{}, err
 		}
+	} else {
+		outFile = "stdout"
 	}
 
 	return Config{InFile: inFile, OutFile: outFile}, nil
@@ -54,8 +56,6 @@ func GetArguments() (Config, error) {
 func parseArgOrError(arg interface{}) (string, error) {
 	if arg == nil {
 		return "", errors.New("arg cannot be nil")
-	} else if arg == nil {
-		return "", errors.New("flag set but no arg set")
 	} else {
 		return arg.(string), nil
 	}
