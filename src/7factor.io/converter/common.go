@@ -10,23 +10,17 @@ func ReadAndConvert(inFile string, outFile string) (string, error) {
 	// verify inFile exists
 	_, err := os.Stat(inFile)
 	if err != nil {
-		return "", fmt.Errorf("file not found")
+		return "", fmt.Errorf("inFile not found")
 	}
 
 	// parse inFile
 	contents, err := ioutil.ReadFile(inFile)
 	if err != nil {
-		return "", fmt.Errorf("unable to read file, catestrophic error")
-	}
-
-	// create outFile if it does not exist
-	_, err = os.Stat(outFile)
-	if os.IsNotExist(err) {
-		file, _ := os.Create(outFile)
-		defer file.Close()
+		return "", fmt.Errorf("unable to read inFile, catestrophic error")
 	}
 
 	// write to outFile
+	// WriteFile will create the file if it does not exist
 	transformedContents, err := TransformAndTranslate(string(contents))
 	if err != nil {
 		return "", fmt.Errorf("error while transforming contents")
