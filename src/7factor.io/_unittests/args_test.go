@@ -7,12 +7,12 @@ import (
 	"os"
 )
 
-var mockNoArgs []string
-var mockInfileArg = []string{"valid_path.env"}
-var errorMockWithOutputShortFlag = []string{"valid_path.env", "-o"}
-var errorMockWithOutputLongFlag = []string{"valid_path.env", "--output"}
-var mockWithOutputShortFlag = []string{"valid_path.env", "-o", "output.json"}
-var mockWithOutputLongFlag = []string{"valid_path.env", "--output", "output.json"}
+var mockNoArgs = []string{"cmd"}
+var mockInfileArg = []string{"cmd", "valid_path.env"}
+var errorMockWithOutputShortFlag = []string{"cmd","valid_path.env", "-o"}
+var errorMockWithOutputLongFlag = []string{"cmd", "valid_path.env", "--output"}
+var mockWithOutputShortFlag = []string{"cmd", "valid_path.env", "-o", "output.json"}
+var mockWithOutputLongFlag = []string{"cmd", "valid_path.env", "--output", "output.json"}
 
 var _ = Describe("The argument parser", func() {
 	Context("When not passed `INFILE` arg", func() {
