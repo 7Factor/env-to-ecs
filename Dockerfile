@@ -15,6 +15,8 @@ COPY ./src/7factor.io src/7factor.io
 
 # run unit tests
 RUN go test -failfast 7factor.io/_unittests
+# run integration tests
+RUN go test -failfast 7factor.io/_inttests
 
 # build binary
 RUN go install 7factor.io/...
