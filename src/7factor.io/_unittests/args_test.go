@@ -30,10 +30,17 @@ var _ = Describe("The argument parser", func() {
 			Expect(err).To(BeNil())
 			Expect(config.InFile).To(Equal("valid_path.env"))
 		})
+
+		It("Prints the output to stdout.", func() {
+			os.Args = mockInfileArg
+			config, err := args.GetArguments()
+			Expect(err).To(BeNil())
+			Expect(config.OutFile).To(Equal("stdout"))
+		})
 	})
 
-	Context("The `-o, --output` flag", func() {
-		It("Errors with empty argument.", func() {
+	Context("When called with output flag and no specified output file", func() {
+		It("Errors in the expected manner", func() {
 			os.Args = errorMockWithOutputShortFlag
 			_, err := args.GetArguments()
 			Expect(err).ToNot(BeNil())
@@ -48,7 +55,6 @@ var _ = Describe("The argument parser", func() {
 			config, err := args.GetArguments()
 			Expect(err).To(BeNil())
 			Expect(config.OutFile).To(Equal("output.json"))
-
 
 			os.Args = mockWithOutputLongFlag
 			config, err = args.GetArguments()
