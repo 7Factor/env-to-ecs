@@ -16,9 +16,9 @@ COPY ./src/7factor.io src/7factor.io
 # build binary
 RUN go install 7factor.io/...
 
-FROM scratch
+FROM bash:5.0.2
 
 COPY --from=builder /go/bin/cmd /go/bin/cmd
 
-# execute binary
-ENTRYPOINT ["/go/bin/cmd"]
+# make binary default executable
+CMD ["/go/bin/cmd"]
