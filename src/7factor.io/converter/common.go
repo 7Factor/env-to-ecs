@@ -7,32 +7,36 @@ import (
 )
 
 func ReadAndConvert(inFile string, outFile string) (string, error) {
-	// verify inFile exists
 	_, err := os.Stat(inFile)
 	if err != nil {
 		return "", fmt.Errorf("INFILE not found")
 	}
 
-	// parse inFile
 	contents, err := ioutil.ReadFile(inFile)
 	if err != nil {
 		return "", fmt.Errorf("unable to read INFILE, catestrophic error")
 	}
 
-	// transform contents
 	transformedContents, err := TransformAndTranslate(string(contents))
+	if err != nil {
+		return "", fmt.Errorf("error while transforming contents")
+	}
 
-	// write to outFile
-	if outFile == "stdout" {
-		fmt.Fprint(os.Stdout, transformedContents)
-	} else {
-		// WriteFile will create the file if it does not exist
-		if err != nil {
-			return "", fmt.Errorf("error while transforming contents")
-		}
-		n1 := []byte(transformedContents)
-		err = ioutil.WriteFile(outFile, n1, 0644)
+	err = writeToOutFile(outFile, transformedContents)
+	if err != nil {
+		return "", fmt.Errorf("unable to write to OUTFILE")
 	}
 
 	return outFile, nil
+}
+
+func writeToOutFile(outFile string, transformedContents string) error {
+	var err error
+	if outFile == "stdout" {
+		fmt.Fprint(os.Stdout, transformedContents)
+	} else {
+		n1 := []byte(transformedContents)
+		err = ioutil.WriteFile(outFile, n1, 0644)
+	}
+	return err
 }
