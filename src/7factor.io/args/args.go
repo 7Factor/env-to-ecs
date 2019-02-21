@@ -19,20 +19,15 @@ func GetArguments() (ArgConfig, error) {
 		return ArgConfig{}, errors.New("infile cannot be empty")
 	}
 
-	argConfig.OutFile = "stdout"
-
 	return ArgConfig{argConfig.InFile, argConfig.OutFile}, nil
 }
 
 func init() {
-	setInfileFlag()
+	setFlag(&argConfig.InFile, "i", "infile", "", "The infile to parse")
+	setFlag(&argConfig.OutFile, "o", "outfile", "stdout", "The outfile to write to.")
 }
 
-func setInfileFlag() {
-	const (
-		defaultInfile = ""
-		usage         = "The infile to parse."
-	)
-	flag.StringVar(&argConfig.InFile, "i", defaultInfile, usage)
-	flag.StringVar(&argConfig.InFile, "infile", defaultInfile, usage)
+func setFlag(flagVar *string, shortFlag string, longFlag string, defaultValue string, usage string) {
+	flag.StringVar(flagVar, shortFlag, defaultValue, usage)
+	flag.StringVar(flagVar, longFlag, defaultValue, usage)
 }
