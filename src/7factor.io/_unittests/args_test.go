@@ -8,7 +8,7 @@ import (
 )
 
 var mockNoArgs = []string{"cmd"}
-var mockInfileArg = []string{"cmd", "valid_path.env"}
+var mockInfileArg = []string{"cmd", "-i", "valid_path.env"}
 var errorMockWithOutputShortFlag = []string{"cmd","valid_path.env", "-o"}
 var errorMockWithOutputLongFlag = []string{"cmd", "valid_path.env", "--output"}
 var mockWithOutputShortFlag = []string{"cmd", "valid_path.env", "-o", "output.json"}
@@ -22,22 +22,22 @@ var _ = Describe("The argument parser", func() {
 			Expect(err).ToNot(BeNil())
 		})
 	})
-	//
-	//Context("When passed an infile and nothing else", func() {
-	//	It("Returns a blank config struct with the input file filled out.", func() {
-	//		os.Args = mockInfileArg
-	//		config, err := args.GetArguments()
-	//		Expect(err).To(BeNil())
-	//		Expect(config.InFile).To(Equal("valid_path.env"))
-	//	})
-	//
-	//	It("Prints the output to stdout.", func() {
-	//		os.Args = mockInfileArg
-	//		config, err := args.GetArguments()
-	//		Expect(err).To(BeNil())
-	//		Expect(config.OutFile).To(Equal("stdout"))
-	//	})
-	//})
+
+	Context("When passed an infile and nothing else", func() {
+		It("Returns the infile and the the outfile as `stdout`.", func() {
+			os.Args = mockInfileArg
+			config, err := args.GetArguments()
+			Expect(err).To(BeNil())
+			Expect(config.InFile).To(Equal("valid_path.env"))
+		})
+
+		It("Prints the output to stdout.", func() {
+			os.Args = mockInfileArg
+			config, err := args.GetArguments()
+			Expect(err).To(BeNil())
+			Expect(config.OutFile).To(Equal("stdout"))
+		})
+	})
 	//
 	//Context("When called with output flag and no specified output file", func() {
 	//	It("Errors in the expected manner", func() {

@@ -19,7 +19,9 @@ func GetArguments() (ArgConfig, error) {
 		return ArgConfig{}, errors.New("infile cannot be empty")
 	}
 
-	return ArgConfig{}, nil
+	argConfig.OutFile = "stdout"
+
+	return ArgConfig{argConfig.InFile, argConfig.OutFile}, nil
 }
 
 func init() {
