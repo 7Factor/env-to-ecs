@@ -22,44 +22,44 @@ var _ = Describe("The argument parser", func() {
 			Expect(err).ToNot(BeNil())
 		})
 	})
-
-	Context("When passed an infile and nothing else", func() {
-		It("Returns a blank config struct with the input file filled out.", func() {
-			os.Args = mockInfileArg
-			config, err := args.GetArguments()
-			Expect(err).To(BeNil())
-			Expect(config.InFile).To(Equal("valid_path.env"))
-		})
-
-		It("Prints the output to stdout.", func() {
-			os.Args = mockInfileArg
-			config, err := args.GetArguments()
-			Expect(err).To(BeNil())
-			Expect(config.OutFile).To(Equal("stdout"))
-		})
-	})
-
-	Context("When called with output flag and no specified output file", func() {
-		It("Errors in the expected manner", func() {
-			os.Args = errorMockWithOutputShortFlag
-			_, err := args.GetArguments()
-			Expect(err).ToNot(BeNil())
-
-			os.Args = errorMockWithOutputLongFlag
-			_, err = args.GetArguments()
-			Expect(err).ToNot(BeNil())
-		})
-
-		It("Returns the config struct with the output file filled out.", func() {
-			os.Args = mockWithOutputShortFlag
-			config, err := args.GetArguments()
-			Expect(err).To(BeNil())
-			Expect(config.OutFile).To(Equal("output.json"))
-
-			os.Args = mockWithOutputLongFlag
-			config, err = args.GetArguments()
-			Expect(err).To(BeNil())
-			Expect(config.OutFile).To(Equal("output.json"))
-		})
-	})
+	//
+	//Context("When passed an infile and nothing else", func() {
+	//	It("Returns a blank config struct with the input file filled out.", func() {
+	//		os.Args = mockInfileArg
+	//		config, err := args.GetArguments()
+	//		Expect(err).To(BeNil())
+	//		Expect(config.InFile).To(Equal("valid_path.env"))
+	//	})
+	//
+	//	It("Prints the output to stdout.", func() {
+	//		os.Args = mockInfileArg
+	//		config, err := args.GetArguments()
+	//		Expect(err).To(BeNil())
+	//		Expect(config.OutFile).To(Equal("stdout"))
+	//	})
+	//})
+	//
+	//Context("When called with output flag and no specified output file", func() {
+	//	It("Errors in the expected manner", func() {
+	//		os.Args = errorMockWithOutputShortFlag
+	//		_, err := args.GetArguments()
+	//		Expect(err).ToNot(BeNil())
+	//
+	//		os.Args = errorMockWithOutputLongFlag
+	//		_, err = args.GetArguments()
+	//		Expect(err).ToNot(BeNil())
+	//	})
+	//
+	//	It("Returns the config struct with the output file filled out.", func() {
+	//		os.Args = mockWithOutputShortFlag
+	//		config, err := args.GetArguments()
+	//		Expect(err).To(BeNil())
+	//		Expect(config.OutFile).To(Equal("output.json"))
+	//
+	//		os.Args = mockWithOutputLongFlag
+	//		config, err = args.GetArguments()
+	//		Expect(err).To(BeNil())
+	//		Expect(config.OutFile).To(Equal("output.json"))
+	//	})
+	//})
 })
