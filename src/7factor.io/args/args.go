@@ -2,65 +2,32 @@ package args
 
 import (
 	"errors"
-	"github.com/docopt/docopt-go"
-	"os"
+	"flag"
 )
 
-// Default return should at a minimum have the
-// InFile value populated with something.
-type Config struct {
+type ArgConfig struct {
 	InFile  string
 	OutFile string
 }
 
-// docopt expects this to be in a very specify format, edit with caution
-const docString = `
-Usage: env_to_ecs [INFILE] [-oh] [OUTFILE]
+var argConfig ArgConfig
 
-Process INFILE and convert it to a new file type.
+func GetArguments() (ArgConfig, error) {
+	flag.Parse()
 
-Arguments:
-  INFILE            Required input file.
-  OUTFILE           Optional output file.
-
-Options:
-  -o --output       Specify output file.
-  -h --help         Display cli info.
-`
-
-func GetArguments() (Config, error) {
-	// setup docString
-	args, err := docopt.Parse(docString, os.Args[1:], true, "", false)
-	if err != nil {
-		return Config{}, errors.New("error parsing args")
+	if argConfig.InFile == "" {
+		return ArgConfig{}, errors.New("infile cannot be empty")
 	}
 
-	inFile, err := parseArgOrError(args["INFILE"])
-	if err != nil {
-		return Config{}, errors.New("INFILE cannot be empty")
-	}
-
-	var outFile string
-	if hasOutputFlag(args) {
-		outFile, err = parseArgOrError(args["OUTFILE"])
-		if err != nil {
-			return Config{}, err
-		}
-	} else {
-		outFile = "stdout"
-	}
-
-	return Config{InFile: inFile, OutFile: outFile}, nil
+	return ArgConfig{argConfig.InFile, argConfig.OutFile}, nil
 }
 
-func parseArgOrError(arg interface{}) (string, error) {
-	if arg == nil {
-		return "", errors.New("arg cannot be nil")
-	} else {
-		return arg.(string), nil
-	}
+func init() {
+	setFlag(&argConfig.InFile, "i", "infile", "", "The infile to parse")
+	setFlag(&argConfig.OutFile, "o", "outfile", "stdout", "The outfile to write to.")
 }
 
-func hasOutputFlag(args map[string]interface{}) bool {
-	return args["-o"] != nil || args["--output"] != false
+func setFlag(flagVar *string, shortFlag string, longFlag string, defaultValue string, usage string) {
+	flag.StringVar(flagVar, shortFlag, defaultValue, usage)
+	flag.StringVar(flagVar, longFlag, defaultValue, usage)
 }

@@ -1,8 +1,6 @@
-hash: f0e17321cf952ba2e4a5d78a534e6afa4e80272f804e82e3b17077649344edba
-updated: 2019-02-04T19:05:44.964136-05:00
+hash: b12b42c3c9bd30e5be5a217e4cc777fe7fa138f2578920f5231d4b60a4468a4c
+updated: 2019-02-21T10:23:11.845925-05:00
 imports:
-- name: github.com/docopt/docopt-go
-  version: 784ddc588536785e7299f7272f39101f7faccc3f
 - name: github.com/hpcloud/tail
   version: a30252cb686a21eb2d0b98132633053ec2f7f1e5
 - name: github.com/onsi/ginkgo
