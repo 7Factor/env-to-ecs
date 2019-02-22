@@ -16,3 +16,10 @@ var outFileArgs = map[string]string{
 	"defaultValue": "stdout",
 	"usage":        "The outfile to parse",
 }
+
+var variableArgs = map[string]string{
+	"shortFlag":    "v",
+	"longFlag":     "variable",
+	"defaultValue": "",
+	"usage":        "Optional variable to pass ie A=B",
+}
