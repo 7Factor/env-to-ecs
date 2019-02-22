@@ -23,11 +23,11 @@ func GetArguments() (ArgConfig, error) {
 }
 
 func init() {
-	setFlag(&argConfig.InFile, "i", "infile", "", "The infile to parse")
-	setFlag(&argConfig.OutFile, "o", "outfile", "stdout", "The outfile to write to.")
+	parseArgsModelAndSetFlag(&argConfig.InFile, inFileArgs)
+	parseArgsModelAndSetFlag(&argConfig.OutFile, outFileArgs)
 }
 
-func setFlag(flagVar *string, shortFlag string, longFlag string, defaultValue string, usage string) {
-	flag.StringVar(flagVar, shortFlag, defaultValue, usage)
-	flag.StringVar(flagVar, longFlag, defaultValue, usage)
+func parseArgsModelAndSetFlag(flagVar *string, argsModel map[string]string) {
+	flag.StringVar(flagVar, argsModel["shortFlag"], argsModel["defaultValue"], argsModel["usage"])
+	flag.StringVar(flagVar, argsModel["longFlag"], argsModel["defaultValue"], argsModel["usage"])
 }
