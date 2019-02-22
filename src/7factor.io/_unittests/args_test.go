@@ -44,16 +44,4 @@ var _ = Describe("The argument parser", func() {
 			Expect(config.OutFile).To(Equal("output.json"))
 		})
 	})
-
-	Context("When called with the additional values flag and no specified additional value", func() {
-		It("errors in the expected manner", func() {
-			os.Args = errorMockWithAdditionalValuesShortFlag
-			_, err := args.GetArguments()
-			Expect(err).ToNot(BeNil())
-
-			os.Args = errorMockWithAdditionalValuesLongFlag
-			_, err = args.GetArguments()
-			Expect(err).ToNot(BeNil())
-		})
-	})
 })
