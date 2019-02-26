@@ -12,6 +12,7 @@ var pathToCMD = "7factor.io/cmd"
 
 var expectedOutput = `[{"name":"FOO","value":"bar"},{"name":"BAZ","value":"boo"}]`
 var expectedOutputWithExtraVar = `[{"name":"FOO","value":"bar"},{"name":"BAZ","value":"boo"},{"name":"extra_var","value":"a_database_connection_string"}]`
+var expectedOutputWithMultipleExtraVar = `[{"name":"FOO","value":"bar"},{"name":"BAZ","value":"boo"},{"name":"extra_var1","value":"this_thing"},{"name":"extra_var2","value":"that_thing"}]`
 
 var _ = Describe("Compiling and running the script with arguments", func() {
 	BeforeSuite(func() {
@@ -80,7 +81,7 @@ var _ = Describe("Compiling and running the script with arguments", func() {
 		})
 	})
 
-	Context("When calling the script with -v and passing valid variables", func() {
+	Context("When calling the script with -v and passing a valid variable", func() {
 		It("Writes the correct output with no errors and exits cleanly.", func() {
 			command := exec.Command(pathToCMD, "-i", "valid_path.env", "-v", "extra_var=a_database_connection_string")
 
@@ -93,6 +94,22 @@ var _ = Describe("Compiling and running the script with arguments", func() {
 			Eventually(session.Err.Contents()).Should(BeEmpty())
 
 			Expect(string(session.Out.Contents())).To(ContainSubstring(expectedOutputWithExtraVar))
+		})
+	})
+
+	Context("When calling the script with multiple -v flags and passing valid variables", func() {
+		It("Writes the correct output with no errors and exits cleanly.", func() {
+			command := exec.Command(pathToCMD, "-i", "valid_path.env", "-v", "extra_var1=this_thing", "-v", "extra_var2=that_thing")
+
+			session, err := Start(command, GinkgoWriter, GinkgoWriter)
+			Expect(err).ShouldNot(HaveOccurred())
+
+			session.Wait()
+
+			Eventually(session).Should(Exit(0))
+			Eventually(session.Err.Contents()).Should(BeEmpty())
+
+			Expect(string(session.Out.Contents())).To(ContainSubstring(expectedOutputWithMultipleExtraVar))
 		})
 	})
 

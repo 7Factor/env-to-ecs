@@ -42,6 +42,14 @@ func parseInfileOrPanic(infile string) (string, error) {
 	return string(contents), nil
 }
 
+func concatExtraVars(toConcat string, extraVars []string) string {
+	var concatedString = toConcat
+	for i := range extraVars {
+		concatedString += extraVars[i] + "\n"
+	}
+	return concatedString
+}
+
 func writeToOutFile(outFile string, transformedContents string) error {
 	var err error
 	if outFile == "stdout" {
@@ -51,12 +59,4 @@ func writeToOutFile(outFile string, transformedContents string) error {
 		err = ioutil.WriteFile(outFile, n1, 0644)
 	}
 	return err
-}
-
-func concatExtraVars(toConcat string, extraVars []string) string {
-	var concatedString = toConcat
-	for i := range extraVars {
-		concatedString += extraVars[i]
-	}
-	return concatedString
 }
