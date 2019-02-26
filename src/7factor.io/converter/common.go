@@ -1,38 +1,60 @@
 package converter
 
 import (
+	. "7factor.io/args"
 	"fmt"
 	"io/ioutil"
 	"os"
 )
 
-func ReadAndConvert(inFile string, outFile string) (string, error) {
-	// verify inFile exists
-	_, err := os.Stat(inFile)
+func ReadAndConvert(config ArgConfig) (string, error) {
+	contents, err := parseInfileOrPanic(config.InFile)
 	if err != nil {
-		return "", fmt.Errorf("INFILE not found")
+		return "", err
 	}
 
-	// parse inFile
-	contents, err := ioutil.ReadFile(inFile)
+	withExtraVars := concatExtraVars(contents, config.Variables)
+
+	transformedContents, err := TransformAndTranslate(withExtraVars)
 	if err != nil {
-		return "", fmt.Errorf("unable to read INFILE, catestrophic error")
+		return "", fmt.Errorf("caught error while attempting to transform contents: %s\n", err)
 	}
 
-	// transform contents
-	transformedContents, err := TransformAndTranslate(string(contents))
+	err = writeToOutFile(config.OutFile, transformedContents)
+	if err != nil {
+		return "", fmt.Errorf("caught error while attempting to tranform contents: %s\n", err)
+	}
 
-	// write to outFile
+	return config.OutFile, nil
+}
+
+func parseInfileOrPanic(infile string) (string, error) {
+	_, err := os.Stat(infile)
+	if err != nil {
+		return "", fmt.Errorf("caught error while looking up file: %s\n", err)
+	}
+	contents, err := ioutil.ReadFile(infile)
+	if err != nil {
+		return "", fmt.Errorf("catestrophic faliure while attempting to read infile: %s\n", err)
+	}
+	return string(contents), nil
+}
+
+func concatExtraVars(toConcat string, extraVars []string) string {
+	var concatedString = toConcat
+	for i := range extraVars {
+		concatedString += extraVars[i] + "\n"
+	}
+	return concatedString
+}
+
+func writeToOutFile(outFile string, transformedContents string) error {
+	var err error
 	if outFile == "stdout" {
 		fmt.Fprint(os.Stdout, transformedContents)
 	} else {
-		// WriteFile will create the file if it does not exist
-		if err != nil {
-			return "", fmt.Errorf("error while transforming contents")
-		}
 		n1 := []byte(transformedContents)
 		err = ioutil.WriteFile(outFile, n1, 0644)
 	}
-
-	return outFile, nil
+	return err
 }

@@ -1,33 +1,17 @@
 package args
 
 import (
-	"errors"
-	"flag"
+	"github.com/jessevdk/go-flags"
 )
 
 type ArgConfig struct {
-	InFile  string
-	OutFile string
+	InFile    string
+	OutFile   string
+	Variables []string
 }
-
-var argConfig ArgConfig
 
 func GetArguments() (ArgConfig, error) {
-	flag.Parse()
+	_, err := flags.Parse(&opt)
 
-	if argConfig.InFile == "" {
-		return ArgConfig{}, errors.New("infile cannot be empty")
-	}
-
-	return ArgConfig{argConfig.InFile, argConfig.OutFile}, nil
-}
-
-func init() {
-	setFlag(&argConfig.InFile, "i", "infile", "", "The infile to parse")
-	setFlag(&argConfig.OutFile, "o", "outfile", "stdout", "The outfile to write to.")
-}
-
-func setFlag(flagVar *string, shortFlag string, longFlag string, defaultValue string, usage string) {
-	flag.StringVar(flagVar, shortFlag, defaultValue, usage)
-	flag.StringVar(flagVar, longFlag, defaultValue, usage)
+	return ArgConfig{opt.Infile, opt.Outfile, opt.Variables}, err
 }
