@@ -61,7 +61,7 @@ var _ = Describe("Compiling and running the script with arguments", func() {
 			session, err := Start(command, GinkgoWriter, GinkgoWriter)
 			Expect(err).ShouldNot(HaveOccurred())
 			session.Wait()
-			Eventually(session).Should(Exit(2))
+			Eventually(session).Should(Exit(1))
 			Eventually(session.Err.Contents()).ShouldNot(BeEmpty())
 		})
 	})
