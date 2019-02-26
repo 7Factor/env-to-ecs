@@ -37,11 +37,11 @@ jobs:
       - task: int-tests
         file: envtoecs-src/ci/tasks/int-tests.yml
 
-  #####################
-  ##     BUILD       ##
-  #####################
+  ####################
+  ##     DEPLOY     ##
+  ####################
 
-  - name: build-rc
+  - name: dockerhub-deploy
     serial_groups: [unit-tests, int-tests]
     plan:
       - get: envtoecs-src
