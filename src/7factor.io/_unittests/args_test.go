@@ -11,6 +11,7 @@ var mockNoArgs = []string{"cmd"}
 var mockInfileArg = []string{"cmd", "-i", "valid_path.env"}
 var mockWithOutput = []string{"cmd", "-i", "valid_path.env", "-o", "output.json"}
 var mockWithVariable = []string{"cmd", "-i", "valid_path.env", "-v", "A=B"}
+var mockWithMultipleVariables = []string{"cmd", "-i", "valid_path.env", "-v", "C=D", "-v", "E=F"}
 
 var _ = Describe("The argument parser", func() {
 	Context("When not passed `INFILE` arg", func() {
@@ -38,7 +39,7 @@ var _ = Describe("The argument parser", func() {
 	})
 
 	Context("When called with the output flag and a specified output file", func() {
-		It("Returns appropriate `ArgConfig` struct with the correct outfile.", func() {
+		It("Returns the appropriate `ArgConfig` struct with the correct outfile.", func() {
 			os.Args = mockWithOutput
 			config, err := args.GetArguments()
 			Expect(err).To(BeNil())
@@ -47,11 +48,20 @@ var _ = Describe("The argument parser", func() {
 	})
 
 	Context("When called with the variable flag and a specified variable", func() {
-		It("Returns appropriate `ArgConfig` struct with the expected variable", func() {
+		It("Returns then appropriate `ArgConfig` struct with the expected variable", func() {
 			os. Args = mockWithVariable
 			config, err := args.GetArguments()
 			Expect(err).To(BeNil())
-			Expect(config.Variable).To(Equal("A=B"))
+			Expect(config.Variables).To(Equal([]string{"A=B"}))
+		})
+	})
+
+	Context("When called with multiple variable flags and specified variables", func() {
+		It("Returns the appropriate `ArgConfig` struct with the expected variables", func() {
+			os.Args = mockWithMultipleVariables
+			config, err := args.GetArguments()
+			Expect(err).To(BeNil())
+			Expect(config.Variables).To(Equal([]string{"C=D", "E=F"}))
 		})
 	})
 })
