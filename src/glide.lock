@@ -1,8 +1,10 @@
-hash: b12b42c3c9bd30e5be5a217e4cc777fe7fa138f2578920f5231d4b60a4468a4c
-updated: 2019-02-21T10:23:11.845925-05:00
+hash: d8886d0c37cbe16cbb085fa979adeab370c8affd2b638e82bc3e5130b27dee54
+updated: 2019-02-25T19:21:16.720154-05:00
 imports:
 - name: github.com/hpcloud/tail
   version: a30252cb686a21eb2d0b98132633053ec2f7f1e5
+- name: github.com/jessevdk/go-flags
+  version: c6ca198ec95c841fdb89fc0de7496fed11ab854e
 - name: github.com/onsi/ginkgo
   version: 2e1be8f7d90e9d3e3e58b0ce470f2f14d075406f
 - name: github.com/onsi/gomega
