@@ -15,7 +15,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	_, err = converter.ReadAndConvert(config.InFile, config.OutFile)
+	_, err = converter.ReadAndConvert(config)
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "recieved error while reading and converting args: %v\n", err)

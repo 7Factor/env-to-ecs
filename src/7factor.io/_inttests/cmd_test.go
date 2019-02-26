@@ -3,7 +3,6 @@ package _inttests
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/onsi/gomega/gbytes"
 	. "github.com/onsi/gomega/gexec"
 	"io/ioutil"
 	"os/exec"
@@ -11,15 +10,14 @@ import (
 
 var pathToCMD = "7factor.io/cmd"
 
+var expectedOutput = `[{"name":"FOO","value":"bar"},{"name":"BAZ","value":"boo"}]`
+var expectedOutputWithExtraVar = `[{"name":"FOO","value":"bar"},{"name":"BAZ","value":"boo"},{"name":"extra_var","value":"a_database_connection_string"}]`
+
 var _ = Describe("Compiling and running the script with arguments", func() {
 	BeforeSuite(func() {
 		var err error
 		pathToCMD, err = Build("7factor.io/cmd")
 		Expect(err).ShouldNot(HaveOccurred())
-	})
-
-	AfterSuite(func() {
-		CleanupBuildArtifacts()
 	})
 
 	Context("When script is called with no INFILE", func() {
@@ -51,11 +49,12 @@ var _ = Describe("Compiling and running the script with arguments", func() {
 			Expect(err).ShouldNot(HaveOccurred())
 			session.Wait()
 			Expect(session).Should(Exit(0))
-			Eventually(session.Out).Should(gbytes.Say(`[{"name":"FOO","value":"bar"},{"name":"BAZ","value":"boo"}]`))
+			Eventually(session.Err.Contents()).Should(BeEmpty())
+			Expect(string(session.Out.Contents())).To(ContainSubstring(expectedOutput))
 		})
 	})
 
-	Context("When calling the script with -o but no specified outfile", func() {
+	Context("When calling the script with --output but no specified outfile", func() {
 		It("Errors and exits in the expected manner.", func() {
 			command := exec.Command(pathToCMD, "-i", "valid_path.env", "-o")
 			session, err := Start(command, GinkgoWriter, GinkgoWriter)
@@ -66,7 +65,7 @@ var _ = Describe("Compiling and running the script with arguments", func() {
 		})
 	})
 
-	Context("When calling the script with -o and passing a valid output file", func() {
+	Context("When calling the script with --output and passing a valid output file", func() {
 		It("Writes to the outfile with no errors and exits cleanly.", func() {
 			command := exec.Command(pathToCMD, "-i", "valid_path.env", "-o", "output.json")
 			session, err := Start(command, GinkgoWriter, GinkgoWriter)
@@ -77,7 +76,27 @@ var _ = Describe("Compiling and running the script with arguments", func() {
 
 			actual, err := ioutil.ReadFile("output.json")
 			Expect(err).To(BeNil())
-			Expect(string(actual)).To(Equal(`[{"name":"FOO","value":"bar"},{"name":"BAZ","value":"boo"}]`))
+			Expect(string(actual)).To(Equal(expectedOutput))
 		})
+	})
+
+	Context("When calling the script with -v and passing valid variables", func() {
+		It("Writes the correct output with no errors and exits cleanly.", func() {
+			command := exec.Command(pathToCMD, "-i", "valid_path.env", "-v", "extra_var=a_database_connection_string")
+
+			session, err := Start(command, GinkgoWriter, GinkgoWriter)
+			Expect(err).ShouldNot(HaveOccurred())
+
+			session.Wait()
+
+			Eventually(session).Should(Exit(0))
+			Eventually(session.Err.Contents()).Should(BeEmpty())
+
+			Expect(string(session.Out.Contents())).To(ContainSubstring(expectedOutputWithExtraVar))
+		})
+	})
+
+	AfterSuite(func() {
+		CleanupBuildArtifacts()
 	})
 })
