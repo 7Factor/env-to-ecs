@@ -33,12 +33,10 @@ func parseInfileOrPanic(infile string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("caught error while looking up file: %s\n", err)
 	}
-
 	contents, err := ioutil.ReadFile(infile)
 	if err != nil {
 		return "", fmt.Errorf("catestrophic faliure while attempting to read infile: %s\n", err)
 	}
-
 	return string(contents), nil
 }
 

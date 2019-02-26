@@ -24,10 +24,9 @@ var _ = Describe("Compiling and running the script with arguments", func() {
 	Context("When script is called with no INFILE", func() {
 		It("Errors and exits in the expected manner.", func() {
 			command := exec.Command(pathToCMD)
-			session, err := Start(command, GinkgoWriter, GinkgoWriter)
-			Expect(err).ShouldNot(HaveOccurred())
-			session.Wait()
-			Eventually(session).Should(Exit(1))
+			session := setUpSessionAndWait(command)
+
+			Eventually(session).Should(Exit(withLinuxErrorCode))
 			Eventually(session.Err.Contents()).ShouldNot(BeEmpty())
 		})
 	})
@@ -38,7 +37,8 @@ var _ = Describe("Compiling and running the script with arguments", func() {
 			session, err := Start(command, GinkgoWriter, GinkgoWriter)
 			Expect(err).ShouldNot(HaveOccurred())
 			session.Wait()
-			Eventually(session).Should(Exit(1))
+
+			Eventually(session).Should(Exit(withLinuxErrorCode))
 			Eventually(session.Err.Contents()).ShouldNot(BeEmpty())
 		})
 	})
@@ -46,11 +46,11 @@ var _ = Describe("Compiling and running the script with arguments", func() {
 	Context("When calling the script with INFILE only", func() {
 		It("Prints the output to stdout", func() {
 			command := exec.Command(pathToCMD, "-i", "valid_path.env")
-			session, err := Start(command, GinkgoWriter, GinkgoWriter)
-			Expect(err).ShouldNot(HaveOccurred())
-			session.Wait()
-			Expect(session).Should(Exit(0))
+			session := setUpSessionAndWait(command)
+
+			Expect(session).Should(Exit(withLinuxPassingCode))
 			Eventually(session.Err.Contents()).Should(BeEmpty())
+
 			Expect(string(session.Out.Contents())).To(ContainSubstring(expectedOutput))
 		})
 	})
@@ -58,10 +58,9 @@ var _ = Describe("Compiling and running the script with arguments", func() {
 	Context("When calling the script with --output but no specified outfile", func() {
 		It("Errors and exits in the expected manner.", func() {
 			command := exec.Command(pathToCMD, "-i", "valid_path.env", "-o")
-			session, err := Start(command, GinkgoWriter, GinkgoWriter)
-			Expect(err).ShouldNot(HaveOccurred())
-			session.Wait()
-			Eventually(session).Should(Exit(1))
+			session := setUpSessionAndWait(command)
+
+			Eventually(session).Should(Exit(withLinuxErrorCode))
 			Eventually(session.Err.Contents()).ShouldNot(BeEmpty())
 		})
 	})
@@ -69,10 +68,9 @@ var _ = Describe("Compiling and running the script with arguments", func() {
 	Context("When calling the script with --output and passing a valid output file", func() {
 		It("Writes to the outfile with no errors and exits cleanly.", func() {
 			command := exec.Command(pathToCMD, "-i", "valid_path.env", "-o", "output.json")
-			session, err := Start(command, GinkgoWriter, GinkgoWriter)
-			Expect(err).ShouldNot(HaveOccurred())
-			session.Wait()
-			Eventually(session).Should(Exit(0))
+			session := setUpSessionAndWait(command)
+
+			Eventually(session).Should(Exit(withLinuxPassingCode))
 			Eventually(session.Err.Contents()).Should(BeEmpty())
 
 			actual, err := ioutil.ReadFile("output.json")
@@ -84,13 +82,9 @@ var _ = Describe("Compiling and running the script with arguments", func() {
 	Context("When calling the script with -v and passing a valid variable", func() {
 		It("Writes the correct output with no errors and exits cleanly.", func() {
 			command := exec.Command(pathToCMD, "-i", "valid_path.env", "-v", "extra_var=a_database_connection_string")
+			session := setUpSessionAndWait(command)
 
-			session, err := Start(command, GinkgoWriter, GinkgoWriter)
-			Expect(err).ShouldNot(HaveOccurred())
-
-			session.Wait()
-
-			Eventually(session).Should(Exit(0))
+			Eventually(session).Should(Exit(withLinuxPassingCode))
 			Eventually(session.Err.Contents()).Should(BeEmpty())
 
 			Expect(string(session.Out.Contents())).To(ContainSubstring(expectedOutputWithExtraVar))
@@ -100,13 +94,9 @@ var _ = Describe("Compiling and running the script with arguments", func() {
 	Context("When calling the script with multiple -v flags and passing valid variables", func() {
 		It("Writes the correct output with no errors and exits cleanly.", func() {
 			command := exec.Command(pathToCMD, "-i", "valid_path.env", "-v", "extra_var1=this_thing", "-v", "extra_var2=that_thing")
+			session := setUpSessionAndWait(command)
 
-			session, err := Start(command, GinkgoWriter, GinkgoWriter)
-			Expect(err).ShouldNot(HaveOccurred())
-
-			session.Wait()
-
-			Eventually(session).Should(Exit(0))
+			Eventually(session).Should(Exit(withLinuxPassingCode))
 			Eventually(session.Err.Contents()).Should(BeEmpty())
 
 			Expect(string(session.Out.Contents())).To(ContainSubstring(expectedOutputWithMultipleExtraVar))
