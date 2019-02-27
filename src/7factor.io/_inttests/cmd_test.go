@@ -103,6 +103,30 @@ var _ = Describe("Compiling and running the script with arguments", func() {
 		})
 	})
 
+	Context("When the script is called with an INFILE that has no newline at the end", func() {
+		It("Writes to the outfile correctly with no errors", func() {
+			command := exec.Command(pathToCMD, "-i", "with_no_new_line.env")
+			session := setUpSessionAndWait(command)
+
+			Expect(session).Should(Exit(withLinuxPassingCode))
+			Eventually(session.Err.Contents()).Should(BeEmpty())
+
+			Expect(string(session.Out.Contents())).To(ContainSubstring(expectedOutput))
+		})
+	})
+
+	Context("When the script is called with an INFILE that has no newline at the end and passing extra variables", func() {
+		It("Writes to the outfile correctly with no errors", func() {
+			command := exec.Command(pathToCMD, "-i", "with_no_new_line.env", "-v", "extra_var=a_database_connection_string")
+			session := setUpSessionAndWait(command)
+
+			Expect(session).Should(Exit(withLinuxPassingCode))
+			Eventually(session.Err.Contents()).Should(BeEmpty())
+
+			Expect(string(session.Out.Contents())).To(ContainSubstring(expectedOutputWithExtraVar))
+		})
+	})
+
 	AfterSuite(func() {
 		CleanupBuildArtifacts()
 	})
