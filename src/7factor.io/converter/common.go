@@ -43,7 +43,7 @@ func parseInfileOrPanic(infile string) (string, error) {
 func concatExtraVars(toConcat string, extraVars []string) string {
 	var concatedString = toConcat
 	for i := range extraVars {
-		concatedString += extraVars[i] + "\n"
+		concatedString += "\n" + extraVars[i]
 	}
 	return concatedString
 }
