@@ -30,7 +30,7 @@ func transform(slice []string) []Pair {
 	var pairs []Pair
 
 	for _, item := range slice {
-		splitOnEquals = strings.Split(item, "=")
+		splitOnEquals = strings.SplitN(item, "=", 2)
 		pairs = append(pairs, Pair{
 			Name:  splitOnEquals[0],
 			Value: splitOnEquals[1],

@@ -27,6 +27,12 @@ Q=R
 S=T
 `
 
+// Base64 strings always end with an equals, handle this case.
+const InputWithEquals = `A=abcdefg=`
+const MultiLineInputWithEquals = `
+A=abcdefg=
+B=C
+`
 const InputWithHash = `WITHHASH=#FOO#`
 
 var _ = Describe("The ECS converter", func() {
@@ -91,6 +97,22 @@ var _ = Describe("The ECS converter", func() {
 			converted, err := converter.TransformAndTranslate(InputWithHash)
 			Expect(err).To(BeNil())
 			Expect(converted).To(Equal(`[{"name":"WITHHASH","value":"#FOO#"}]`))
+		})
+	})
+
+	Context("When called with a string variable with an equals sign in it", func() {
+		It("Works as expected and doesn't throw an index out of range exception.", func() {
+			converted, err := converter.TransformAndTranslate(InputWithEquals)
+			Expect(err).To(BeNil())
+			Expect(converted).To(Equal(`[{"name":"A","value":"abcdefg="}]`))
+		})
+	})
+
+	Context("When called with a string variable with an equals sign in it and multiple variables", func() {
+		It("Works as expected and doesn't throw an index out of range exception.", func() {
+			converted, err := converter.TransformAndTranslate(MultiLineInputWithEquals)
+			Expect(err).To(BeNil())
+			Expect(converted).To(Equal(`[{"name":"A","value":"abcdefg="},{"name":"B","value":"C"}]`))
 		})
 	})
 })

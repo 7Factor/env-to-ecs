@@ -38,3 +38,7 @@ An the output will look like:
 We wanted a way to configure our environments in one place, and know that those configuration would be propagated elsewhere automagically.
 For us, an environment definitions file is that single source of truth, and all other configuration files should be dependant on that.
 This will hopefully lead to less configuration drift and questions down the road.
+
+#### Developing
+
+Simplest way to get started is to clone the repo and run the `./ci/scripts/ensure_deps.sh`. We use glide for dependencies, so make sure you have that installed. Once you have that running the scripts in that directory should help. They're hopefully named in an intuitive way.
