@@ -1,5 +1,2 @@
 #!/bin/sh
-export GOPATH=$(pwd)
-export GOBIN=$GOPATH/bin
-
-go install 7factor.io/...
+cd src/7factor.io && go mod verify && go install ./...

@@ -15,6 +15,5 @@ run:
   args:
   - -exc
   - |
-    ./ci/scripts/ensure_deps.sh
     ./ci/scripts/int_tests.sh
   dir: envtoecs-src
