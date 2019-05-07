@@ -1,20 +1,20 @@
-FROM golang:1.10-alpine AS builder
+FROM golang:1.12-alpine AS builder
 
-RUN apk add --no-cache curl git
-RUN curl https://glide.sh/get | sh
+RUN apk update && apk add git
 
-WORKDIR /go
+WORKDIR /go/src/7factor.io/
+ENV GO111MODULE=on
+ENV CGO_ENABLES=0
 
 # install deps
-COPY ./src/glide.lock src/
-COPY ./src/glide.yaml src/
-RUN cd src && glide install
+COPY ./src/7factor.io/go.* ./
+RUN go mod download
 
 # Copy src
-COPY ./src/7factor.io src/7factor.io
+COPY ./src/7factor.io ./
 
-# build binary
-RUN go install 7factor.io/...
+# build binary and install
+RUN go install ./...
 
 FROM bash:5.0.2
 
