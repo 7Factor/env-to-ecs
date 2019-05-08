@@ -1,10 +1,9 @@
 FROM golang:1.12-alpine AS builder
 
-RUN apk update && apk add git
+RUN apk update && apk add --no-cache git
 
 WORKDIR /go/src/7factor.io/
 ENV GO111MODULE=on
-ENV CGO_ENABLES=0
 
 # install deps
 COPY ./src/7factor.io/go.* ./

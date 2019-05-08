@@ -19,7 +19,7 @@ L=M
 
 N=O
 `
-const SingleLineMultiInput = `W=X Y=Z`
+const SingleLineMultiInput = `W=X   Y=Z`
 const illegalJSONInput = `A=\"`
 const MultiLineWithComments = `
 # this is a comment
@@ -34,6 +34,8 @@ A=abcdefg=
 B=C
 `
 const InputWithHash = `WITHHASH=#FOO#`
+
+const InputWithQuotes = `WITHQUOTES="this is a test"`
 
 var _ = Describe("The ECS converter", func() {
 	Context("When passed a blank file", func() {
@@ -113,6 +115,14 @@ var _ = Describe("The ECS converter", func() {
 			converted, err := converter.TransformAndTranslate(MultiLineInputWithEquals)
 			Expect(err).To(BeNil())
 			Expect(converted).To(Equal(`[{"name":"A","value":"abcdefg="},{"name":"B","value":"C"}]`))
+		})
+	})
+
+		Context("When called with a quoted string variable", func() {
+		It("Works as expected and doesn't throw an index out of range exception.", func() {
+			converted, err := converter.TransformAndTranslate(InputWithQuotes)
+			Expect(err).To(BeNil())
+			Expect(converted).To(Equal(`[{"name":"WITHQUOTES","value":"this is a test"}]`))
 		})
 	})
 })
