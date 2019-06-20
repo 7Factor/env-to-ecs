@@ -52,7 +52,8 @@ func translate(pairs []Pair) (string, error) {
 
 func cleanContents(dirtyString string) []string {
 	withoutComments := removeComments(dirtyString)
-	slice := splitOnWhiteSpace(withoutComments)
+	newLines := splitOnNewLine(withoutComments)
+	slice := splitOnWhiteSpace(newLines)
 	cleanedSlice := removeEmptyStrings(slice)
 	return cleanedSlice
 }
@@ -63,16 +64,21 @@ func removeComments(stringWithComments string) string {
 	return withoutComments
 }
 
-var whiteSpaceSplitter = regexp.MustCompile(`[^\s"']+|"([^"]*)"|'([^']*)`)
-func splitOnWhiteSpace(stringWithWhiteSpace string) []string {
-	fmt.Println("Input ", stringWithWhiteSpace)
-	noWhiteSpace := strings.Fields(stringWithWhiteSpace)
+func splitOnNewLine(stringWithNewLines string) []string {
+	str := strings.Split(stringWithNewLines, "\n")
+	return str
+}
 
-	for i, v := range noWhiteSpace {
-		fmt.Println(i, " => ", v)
+func splitOnWhiteSpace(stringWithWhiteSpace []string) []string {
+	var itemList []string
+	for _, str := range stringWithWhiteSpace {
+		noWhiteSpace := strings.Fields(str)
+		newStr := strings.Join(noWhiteSpace, "")
+		itemList = append(itemList, newStr)
 	}
 
-	return noWhiteSpace
+	fmt.Println(itemList)
+	return itemList
 }
 
 func removeEmptyStrings(sliceWithEmptyStrings []string) []string {
