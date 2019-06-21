@@ -14,24 +14,29 @@ type Pair struct {
 }
 
 
-func TransformAndTranslate(contents string) (string, error) {
+func ConvertInputToJson(contents string) (string, error) {
 	if contents == "" {
 		return `[]`, errors.New("contents cannot be empty")
 	}
+	itemsToBeParsed := handleInputString(contents)
 
+	pairs := splitOnEquals(itemsToBeParsed)
+	return pairsToString(pairs)
+}
+
+func handleInputString(contents string) []string {
 	var itemsToBeParsed []string
 	for _, line := range strings.Split(contents, "\n") {
 		if hasComment(line) || hasEmptyString(line) {
 			continue
 		}
-		items := parse(line)
-		
+
+		items := processSingleLine(line)
 
 		itemsToBeParsed = append(itemsToBeParsed, items...)
 	}
 
-	pairs := transform(itemsToBeParsed)
-	return translate(pairs)
+	return itemsToBeParsed
 }
 
 var commentRegex = regexp.MustCompile("(?m)^\\s*\\#.*$")
@@ -44,7 +49,7 @@ func hasEmptyString(line string) bool {
 }
 
 var singleValueContextRegex = regexp.MustCompile("^.+?=.+?$")
-func parse(line string) []string {
+func processSingleLine(line string) []string {
 	defer func() {
 		// Clear out newItems for next call
 		newItems = nil
@@ -73,7 +78,6 @@ func parse(line string) []string {
 
 		// Try and pull next 2 items and append together to create a statement (i.e X=1).
 		newItems = append(newItems, item+items[i+1]+items[i+2])
-		
 		// Skip the next two items, because we've already inserted them into our item list.
 		i+=2
 	}
@@ -125,7 +129,7 @@ func resetItems() {
 	quotedItems = nil
 }
 
-func transform(slice []string) []Pair {
+func splitOnEquals(slice []string) []Pair {
 	var splitOnEquals []string
 	var pairs []Pair
 
@@ -140,7 +144,7 @@ func transform(slice []string) []Pair {
 	return pairs
 }
 
-func translate(pairs []Pair) (string, error) {
+func pairsToString(pairs []Pair) (string, error) {
 	buffer := bytes.Buffer{}
 	err := json.NewEncoder(&buffer).Encode(pairs)
 
