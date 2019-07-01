@@ -15,7 +15,7 @@ func ReadAndConvert(config ArgConfig) (string, error) {
 
 	withExtraVars := concatExtraVars(contents, config.Variables)
 
-	transformedContents, err := TransformAndTranslate(withExtraVars)
+	transformedContents, err := ConvertInputToJson(withExtraVars)
 	if err != nil {
 		return "", fmt.Errorf("caught error while attempting to transform contents: %s\n", err)
 	}
