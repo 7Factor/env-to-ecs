@@ -97,6 +97,7 @@ var quotedItems []string
 var parsingQuotes = false
 var parsingSpacedQuotes = false
 func handleQuotes(item string) bool {
+	isQuotes := false
 	if strings.Contains(item, "\"") && !strings.HasSuffix(item, "\"") {
 		parsingQuotes = true
 	}
@@ -112,9 +113,9 @@ func handleQuotes(item string) bool {
 			}
 			resetItems()
 		}
-		return true
+		isQuotes = true
 	}
-	return  false
+	return  isQuotes
 }
 
 func handleEmptyVal(item string, items []string, i int) bool {
@@ -126,13 +127,14 @@ func handleEmptyVal(item string, items []string, i int) bool {
 }
 
 func handleSpacedQuotes(item string, items []string, iterator int) bool {
+	isSpacedQuotes := false
 	if strings.Contains(items[iterator+2], "\"") && !strings.HasSuffix(items[iterator+2], "\"") {
 		parsingQuotes = true
 		parsingSpacedQuotes = true
 		tempSpacedItem = item + items[iterator+1]
-		return true
+		isSpacedQuotes = true
 	}
-	return false
+	return isSpacedQuotes
 }
 
 func resetItems() {
