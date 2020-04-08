@@ -70,6 +70,11 @@ func processSingleLine(line string) []string {
 			continue
 		}
 
+		if handleEmptyVal(item, items, i) {
+			newItems = append(newItems, item)
+			continue
+		}
+
 		// Try to predict the next spaced key/val pair to see if it has quotes.
 		if handleSpacedQuotes(item, items, i) {
 			i++
@@ -92,6 +97,7 @@ var quotedItems []string
 var parsingQuotes = false
 var parsingSpacedQuotes = false
 func handleQuotes(item string) bool {
+	isQuotes := false
 	if strings.Contains(item, "\"") && !strings.HasSuffix(item, "\"") {
 		parsingQuotes = true
 	}
@@ -107,19 +113,28 @@ func handleQuotes(item string) bool {
 			}
 			resetItems()
 		}
+		isQuotes = true
+	}
+	return  isQuotes
+}
+
+func handleEmptyVal(item string, items []string, i int) bool {
+	if len(items) < 2 {
+		tempSpacedItem = item
 		return true
 	}
-	return  false
+	return false
 }
 
 func handleSpacedQuotes(item string, items []string, iterator int) bool {
+	isSpacedQuotes := false
 	if strings.Contains(items[iterator+2], "\"") && !strings.HasSuffix(items[iterator+2], "\"") {
 		parsingQuotes = true
 		parsingSpacedQuotes = true
 		tempSpacedItem = item + items[iterator+1]
-		return true
+		isSpacedQuotes = true
 	}
-	return false
+	return isSpacedQuotes
 }
 
 func resetItems() {

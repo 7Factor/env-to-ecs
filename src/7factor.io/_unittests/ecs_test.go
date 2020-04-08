@@ -9,6 +9,11 @@ import (
 // Constants for testing.
 const EmptyEnvironmentArray = `[]`
 const SingleLineSingleInput = `A=B`
+const EmptyValueInput = `A=`
+const MultiEmptyValueInput = `
+A=
+B=
+`
 const MultiLineInput = `
 A=B
 D=E
@@ -57,6 +62,22 @@ var _ = Describe("The ECS converter", func() {
 			converted, err := converter.ConvertInputToJson(SingleLineSingleInput)
 			Expect(err).To(BeNil())
 			Expect(converted).To(Equal(`[{"name":"A","value":"B"}]`))
+		})
+	})
+
+	Context("When passed an empty value input", func() {
+		It("Returns the expected JSON blob", func() {
+			converted, err := converter.ConvertInputToJson(EmptyValueInput)
+			Expect(err).To(BeNil());
+			Expect(converted).To(Equal(`[{"name":"A","value":""}]`))
+		})
+	})
+
+	Context("When passed multiple empty value inputs", func() {
+		It("Returns the expected JSON blob", func() {
+			converted, err := converter.ConvertInputToJson(MultiEmptyValueInput)
+			Expect(err).To(BeNil());
+			Expect(converted).To(Equal(`[{"name":"A","value":""},{"name":"B","value":""}]`))
 		})
 	})
 
