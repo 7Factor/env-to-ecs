@@ -5,15 +5,15 @@ image_resource:
   type: docker-image
   source:
     repository: golang
-    tag: 1.12
+    tag: 1.17
 
 inputs:
-- name: envtoecs-src
+  - name: envtoecs-src
 
 run:
   path: sh
   args:
-  - -exc
-  - |
-    ./ci/scripts/int_tests.sh
+    - -exc
+    - |
+      ./ci/scripts/int_tests.sh
   dir: envtoecs-src
