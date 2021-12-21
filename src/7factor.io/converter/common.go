@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 )
 
 func ReadAndConvert(config ArgConfig) (string, error) {
@@ -13,7 +14,7 @@ func ReadAndConvert(config ArgConfig) (string, error) {
 		return "", err
 	}
 
-	withExtraVars := concatExtraVars(contents, config.Variables)
+	withExtraVars := append(contents, config.Variables...)
 
 	transformedContents, err := ConvertInputToJson(withExtraVars)
 	if err != nil {
@@ -28,24 +29,16 @@ func ReadAndConvert(config ArgConfig) (string, error) {
 	return config.OutFile, nil
 }
 
-func parseInfileOrPanic(infile string) (string, error) {
+func parseInfileOrPanic(infile string) ([]string, error) {
 	_, err := os.Stat(infile)
 	if err != nil {
-		return "", fmt.Errorf("caught error while looking up file: %s\n", err)
+		return []string{}, fmt.Errorf("caught error while looking up file: %s\n", err)
 	}
 	contents, err := ioutil.ReadFile(infile)
 	if err != nil {
-		return "", fmt.Errorf("catestrophic faliure while attempting to read infile: %s\n", err)
+		return []string{}, fmt.Errorf("catestrophic faliure while attempting to read infile: %s\n", err)
 	}
-	return string(contents), nil
-}
-
-func concatExtraVars(toConcat string, extraVars []string) string {
-	var concatedString = toConcat
-	for i := range extraVars {
-		concatedString += "\n" + extraVars[i]
-	}
-	return concatedString
+	return strings.Split(string(contents), "\n"), nil
 }
 
 func writeToOutFile(outFile string, transformedContents string) error {
