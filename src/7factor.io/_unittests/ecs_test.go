@@ -43,6 +43,8 @@ const InputWithHash = `WITHHASH=#FOO#`
 
 const InputWithQuotes = `WITHQUOTES="this is a test"`
 const InputWithQuotesAndSpaces = `A = "test string"`
+const MultiLineInputWithNewlinesInQuotes = `A="test
+string"`
 
 const CrazyInput = `A=1 B = 2 C="test string" D = "another test string" E="1" F = "2"
 G = "another test string"
@@ -94,6 +96,14 @@ var _ = Describe("The ECS converter", func() {
 			converted, err := converter.ConvertInputToJson([]string{InputWithQuotesAndSpaces})
 			Expect(err).To(BeNil())
 			Expect(converted).To(Equal(`[{"name":"A","value":"test string"}]`))
+		})
+	})
+
+	Context("When passed a multi-line file with newlines inside quotes", func() {
+		It("Returns the expected JSON blob", func() {
+			converted, err := converter.ConvertInputToJson([]string{MultiLineInputWithNewlinesInQuotes})
+			Expect(err).To(BeNil())
+			Expect(converted).To(Equal(`[{"name":"A","value":"test\nstring"}]`))
 		})
 	})
 
