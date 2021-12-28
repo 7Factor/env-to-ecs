@@ -35,6 +35,7 @@ S=T
 
 // Base64 strings always end with an equals, handle this case.
 const InputWithEquals = `A=abcdefg=`
+const InputWithMultipleEquals = `A=abcdefg===`
 const MultiLineInputWithEquals = `
 A=abcdefg=
 B=C
@@ -165,11 +166,19 @@ var _ = Describe("The ECS converter", func() {
 		})
 	})
 
-	Context("When called with a string variable with an equals sign in it", func() {
+	Context("When called with a string variable ending with an equals sign", func() {
 		It("Works as expected and doesn't throw an index out of range exception.", func() {
 			converted, err := converter.ConvertInputToJson([]string{InputWithEquals})
 			Expect(err).To(BeNil())
 			Expect(converted).To(Equal(`[{"name":"A","value":"abcdefg="}]`))
+		})
+	})
+
+	Context("When called with a string variable ending with multiple equals signs", func() {
+		It("Works as expected and doesn't throw an index out of range exception.", func() {
+			converted, err := converter.ConvertInputToJson([]string{InputWithMultipleEquals})
+			Expect(err).To(BeNil())
+			Expect(converted).To(Equal(`[{"name":"A","value":"abcdefg==="}]`))
 		})
 	})
 
