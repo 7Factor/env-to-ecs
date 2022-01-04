@@ -36,6 +36,8 @@ S=T
 // Base64 strings always end with an equals, handle this case.
 const InputWithEquals = `A=abcdefg=`
 const InputWithMultipleEquals = `A=abcdefg===`
+const InputWithQueryParams = `SPRING_DATASOURCE_URL=jdbc:mysql://example.com/database?useSSL=false`
+const InputWithQuotedValueQueryParams = `SPRING_DATASOURCE_URL="jdbc:mysql://example.com/database?useSSL=false"`
 const MultiLineInputWithEquals = `
 A=abcdefg=
 B=C
@@ -179,6 +181,22 @@ var _ = Describe("The ECS converter", func() {
 			converted, err := converter.ConvertInputToJson([]string{InputWithMultipleEquals})
 			Expect(err).To(BeNil())
 			Expect(converted).To(Equal(`[{"name":"A","value":"abcdefg==="}]`))
+		})
+	})
+
+	Context("When called with a string variable that is a URL with query params", func() {
+		It("Works as expected and doesn't drop query param values.", func() {
+			converted, err := converter.ConvertInputToJson([]string{InputWithQueryParams})
+			Expect(err).To(BeNil())
+			Expect(converted).To(Equal(`[{"name":"SPRING_DATASOURCE_URL","value":"jdbc:mysql://example.com/database?useSSL=false"}]`))
+		})
+	})
+
+	Context("When called with a string variable that is a quoted URL with query params", func() {
+		It("Works as expected and doesn't drop query param values.", func() {
+			converted, err := converter.ConvertInputToJson([]string{InputWithQuotedValueQueryParams})
+			Expect(err).To(BeNil())
+			Expect(converted).To(Equal(`[{"name":"SPRING_DATASOURCE_URL","value":"jdbc:mysql://example.com/database?useSSL=false"}]`))
 		})
 	})
 

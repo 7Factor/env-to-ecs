@@ -23,7 +23,7 @@ func ConvertInputToJson(contents []string) (string, error) {
 	return pairsToString(pairs)
 }
 
-var assignmentRegex = regexp.MustCompile("\\w+ *= *(?:'[^']*'|\"[^\"]*\"|[^\\s=]*)=*")
+var assignmentRegex = regexp.MustCompile("\\w+ *= *(?:'[^']*'|\"[^\"]*\"|[^\\s]*)")
 
 func handleInputSlice(contents []string) []string {
 	var itemsToBeParsed []string
