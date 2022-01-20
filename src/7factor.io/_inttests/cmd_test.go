@@ -1,6 +1,7 @@
 package _inttests
 
 import (
+	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	. "github.com/onsi/gomega/gexec"
@@ -14,6 +15,10 @@ var expectedOutput = `[{"name":"FOO","value":"bar"},{"name":"BAZ","value":"boo"}
 var expectedOutputWithExtraVar = `[{"name":"FOO","value":"bar"},{"name":"BAZ","value":"boo"},{"name":"extra_var","value":"a_database_connection_string"}]`
 var expectedOutputWithMultipleExtraVar = `[{"name":"FOO","value":"bar"},{"name":"BAZ","value":"boo"},{"name":"extra_var1","value":"this_thing"},{"name":"extra_var2","value":"that_thing"}]`
 
+var jsonParentName = `env_vars`
+var expectedOutputWithJsonParent = fmt.Sprintf(`{"%s":%s}`, jsonParentName, expectedOutput)
+var expectedOutputWithJsonParentNoVars = fmt.Sprintf(`{"%s":[]}`, jsonParentName)
+
 var _ = Describe("Compiling and running the script with arguments", func() {
 	BeforeSuite(func() {
 		var err error
@@ -21,7 +26,7 @@ var _ = Describe("Compiling and running the script with arguments", func() {
 		Expect(err).ShouldNot(HaveOccurred())
 	})
 
-    Describe("The -i | --infile flag", func() {
+	Describe("The -i | --infile flag", func() {
 		Context("When script is called with no INFILE", func() {
 			It("Errors and exits in the expected manner.", func() {
 				command := exec.Command(pathToCMD)
@@ -131,6 +136,42 @@ var _ = Describe("Compiling and running the script with arguments", func() {
 				Eventually(session.Err.Contents()).Should(BeEmpty())
 
 				Expect(string(session.Out.Contents())).To(ContainSubstring(expectedOutputWithExtraVar))
+			})
+		})
+	})
+
+	Describe("The -p | --parent flag", func() {
+		Context("When calling the script with parent param", func() {
+			It("Writes the correct output with no errors and exits cleanly.", func() {
+				command := exec.Command(pathToCMD, "-i", "valid_path.env", "-p", jsonParentName)
+				session := setUpSessionAndWait(command)
+
+				Eventually(session).Should(Exit(withLinuxPassingCode))
+				Eventually(session.Err.Contents()).Should(BeEmpty())
+
+				Expect(string(session.Out.Contents())).To(ContainSubstring(expectedOutputWithJsonParent))
+			})
+		})
+
+		Context("When calling the script with parent param and empty env file", func() {
+			It("Writes the correct output with no errors and exits cleanly.", func() {
+				command := exec.Command(pathToCMD, "-i", "empty.env", "-p", jsonParentName)
+				session := setUpSessionAndWait(command)
+
+				Eventually(session).Should(Exit(withLinuxPassingCode))
+				Eventually(session.Err.Contents()).Should(BeEmpty())
+
+				Expect(string(session.Out.Contents())).To(ContainSubstring(expectedOutputWithJsonParentNoVars))
+			})
+		})
+
+		Context("When calling the script with parent param with blank arg", func() {
+			It("Writes the correct output with no errors and exits cleanly.", func() {
+				command := exec.Command(pathToCMD, "-i", "valid_path.env", "-p", "\"\"")
+				session := setUpSessionAndWait(command)
+
+				Eventually(session).Should(Exit(withLinuxErrorCode))
+				Eventually(session.Err.Contents()).ShouldNot(BeEmpty())
 			})
 		})
 	})

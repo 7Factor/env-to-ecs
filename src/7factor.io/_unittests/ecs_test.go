@@ -2,12 +2,16 @@ package _unittests
 
 import (
 	"7factor.io/converter"
+	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 // Constants for testing.
 const EmptyEnvironmentArray = `[]`
+const EmptyEnvironmentObject = `{}`
+const DefaultParentKey = `env_vars`
+const EmptyEnvironmentArrayParentKey = `{"%s":[]}`
 const SingleLineSingleInput = `A=B`
 const EmptyValueInput = `A=`
 const MultiEmptyValueInput = `
@@ -221,6 +225,30 @@ var _ = Describe("The ECS converter", func() {
 			converted, err := converter.ConvertInputToJson([]string{CrazyInput})
 			Expect(err).To(BeNil())
 			Expect(converted).To(Equal(`[{"name":"A","value":"1"},{"name":"B","value":"2"},{"name":"C","value":"test string"},{"name":"D","value":"another test string"},{"name":"E","value":"1"},{"name":"F","value":"2"},{"name":"G","value":"another test string"},{"name":"H","value":"test string"}]`))
+		})
+	})
+
+	Context("When passed a parent key and a blank file", func() {
+		It("Returns an empty JSON blob", func() {
+			converted, err := converter.ConvertInputToJsonObject([]string{}, DefaultParentKey)
+			Expect(err).ToNot(BeNil())
+			Expect(converted).To(Equal(fmt.Sprintf(EmptyEnvironmentArrayParentKey, DefaultParentKey)))
+		})
+	})
+
+	Context("When passed a single line file without comments and a blank parent key", func() {
+		It("Returns an empty JSON blob", func() {
+			converted, err := converter.ConvertInputToJsonObject([]string{}, "")
+			Expect(err).ToNot(BeNil())
+			Expect(converted).To(Equal(EmptyEnvironmentObject))
+		})
+	})
+
+	Context("When passed a parent key and a single line file without comments", func() {
+		It("Returns the expected JSON blob", func() {
+			converted, err := converter.ConvertInputToJsonObject([]string{SingleLineSingleInput}, DefaultParentKey)
+			Expect(err).To(BeNil())
+			Expect(converted).To(Equal(`{"env_vars":[{"name":"A","value":"B"}]}`))
 		})
 	})
 })

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"regexp"
 	"strings"
 )
@@ -14,13 +15,37 @@ type Pair struct {
 }
 
 func ConvertInputToJson(contents []string) (string, error) {
+	pairs, err := preparePairs(contents)
+	if err != nil {
+		return `[]`, err
+	}
+	return objToString(pairs)
+}
+
+func ConvertInputToJsonObject(contents []string, parentKey string) (string, error) {
+	if len(parentKey) == 0 {
+		return `{}`, errors.New("contents cannot be empty")
+	}
+
+	pairs, err := preparePairs(contents)
+	if err != nil {
+		return fmt.Sprintf(`{"%s":[]}`, parentKey), err
+	}
+	if pairs == nil {
+		pairs = []Pair{}
+	}
+
+	metadata := map[string][]Pair{parentKey: pairs}
+	return objToString(metadata)
+}
+
+func preparePairs(contents []string) ([]Pair, error) {
 	if len(contents) == 0 {
-		return `[]`, errors.New("contents cannot be empty")
+		return []Pair{}, errors.New("contents cannot be empty")
 	}
 	itemsToBeParsed := handleInputSlice(contents)
 
-	pairs := splitOnEquals(itemsToBeParsed)
-	return pairsToString(pairs)
+	return splitOnEquals(itemsToBeParsed), nil
 }
 
 var assignmentRegex = regexp.MustCompile("\\w+ *= *(?:'[^']*'|\"[^\"]*\"|[^\\s]*)")
@@ -67,9 +92,9 @@ func splitOnEquals(slice []string) []Pair {
 	return pairs
 }
 
-func pairsToString(pairs []Pair) (string, error) {
+func objToString(obj interface{}) (string, error) {
 	buffer := bytes.Buffer{}
-	err := json.NewEncoder(&buffer).Encode(pairs)
+	err := json.NewEncoder(&buffer).Encode(obj)
 
 	if err != nil {
 		return "", err
