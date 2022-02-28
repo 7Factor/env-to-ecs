@@ -59,6 +59,8 @@ const CrazyInput = `A=1 B = 2 C="test string" D = "another test string" E="1" F 
 G = "another test string"
 H="test string"`
 
+const ComplexValues = `ITEMNAME=[{"Url":"test.com","Enabled":true}]`
+
 var _ = Describe("The ECS converter", func() {
 	Context("When passed a blank file", func() {
 		It("Returns an empty JSON blob", func() {
@@ -251,4 +253,13 @@ var _ = Describe("The ECS converter", func() {
 			Expect(converted).To(Equal(`{"env_vars":[{"name":"A","value":"B"}]}`))
 		})
 	})
+
+	Context("When called with a complex value", func() {
+        It("Returns the expected JSON blob.", func() {
+            converted, err := converter.ConvertInputToJson([]string{ComplexValues})
+			fmt.Println(converted)
+            Expect(err).To(BeNil())
+            Expect(converted).To(Equal(`[{"name":"ITEMNAME","value":"[{\"Url\":\"test.com\",\"Enabled\":true}]"}]`))
+        })
+    })
 })
